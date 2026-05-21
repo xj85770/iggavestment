@@ -76,11 +76,17 @@ def test_build_conviction_map_negative():
 # ── Sparkline ─────────────────────────────────────────────────────────────────
 
 def test_sparkline_length():
-    result = build_sparkline(72, [60, 65, 68, 70])
+    # With history_count >= 4 we get 14 points
+    result = build_sparkline(72, [60, 65, 68, 70], history_count=10)
     assert len(result) == 14
 
+def test_sparkline_length_cold_start():
+    # Cold start (history_count < 4) returns empty list
+    result = build_sparkline(72, [60, 65, 68, 70], history_count=0)
+    assert result == []
+
 def test_sparkline_ends_at_current():
-    result = build_sparkline(85, [])
+    result = build_sparkline(85, [], history_count=10)
     assert result[-1] == 85
 
 
@@ -104,7 +110,8 @@ def test_synthesize_state_dry_run():
         assert 0 <= t["conviction"] <= 100
         assert t["id"] in THEMES
         assert isinstance(t["sparkline"], list)
-        assert len(t["sparkline"]) == 14
+        # sparkline is [] on cold start (no history dir populated), or 14 points with history
+        assert len(t["sparkline"]) in (0, 14)
         assert "weekly_dollars" in t
         assert t["weekly_dollars"] > 0
 

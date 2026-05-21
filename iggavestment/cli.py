@@ -26,13 +26,14 @@ structlog.configure(
     logger_factory=structlog.stdlib.LoggerFactory(),
 )
 
-from .config import LOG_DIR, THEMES, DATA_DIR
+from .config import LOG_DIR, THEMES, DATA_DIR, CLAUDE_CLI_PATH, STATE_JSON
 from .db import RunAccumulator
 from .fetch import fetch_all_feeds, FEED_REGISTRY
 from .normalize import normalize_batch, RawDoc, Event, Score
 from .score import score_events
 from .synthesize import synthesize_state
 from .render import write_state, write_history_snapshot, append_audit_log, load_prior_state
+from .schema import validate_state
 
 log = structlog.get_logger(__name__)
 
@@ -98,9 +99,45 @@ def _make_mock_docs() -> list[RawDoc]:
     return docs
 
 
+_RECENT_THRESHOLD_HOURS = 5   # skip if last refresh was < 5h ago
+
+
+def _is_too_recent() -> bool:
+    """FIX 5: guard against double-runs during DST transitions or manual triggers."""
+    if not STATE_JSON.exists():
+        return False
+    try:
+        import json as _json
+        state = _json.loads(STATE_JSON.read_text(encoding="utf-8"))
+        gen_at_str = state.get("generated_at")
+        if not gen_at_str:
+            return False
+        from dateutil.parser import parse as _parse
+        gen_at = _parse(gen_at_str)
+        if gen_at.tzinfo is None:
+            # Assume UTC if tz missing
+            gen_at = gen_at.replace(tzinfo=timezone.utc)
+        age_hours = (datetime.now(timezone.utc) - gen_at).total_seconds() / 3600
+        if age_hours < _RECENT_THRESHOLD_HOURS:
+            click.echo(
+                f"skipped: too recent — last refresh was {age_hours:.1f}h ago "
+                f"(threshold {_RECENT_THRESHOLD_HOURS}h)"
+            )
+            return True
+    except Exception:
+        pass
+    return False
+
+
 def _pipeline(dry_run: bool = False) -> None:
+    import time as _time
     today = datetime.now(timezone.utc).date().isoformat()
     _setup_logging(today)
+
+    # FIX I: reset token counters at pipeline start
+    from .llm import reset_usage, get_usage
+    reset_usage()
+    _t_start = _time.monotonic()
 
     run = RunAccumulator()
     prior_state = load_prior_state()
@@ -127,11 +164,6 @@ def _pipeline(dry_run: bool = False) -> None:
             run.events = run.events[:MAX_EVENTS]
 
     # 3. Score
-    client = None
-    if not dry_run:
-        from .config import get_anthropic_client
-        client = get_anthropic_client()
-
     if run.events:
         if dry_run:
             # Build mock scores from mock docs (deterministic)
@@ -149,7 +181,7 @@ def _pipeline(dry_run: bool = False) -> None:
             log.info("pipeline_mock_scored", n=len(mock_scores))
         else:
             log.info("pipeline_scoring", n=len(run.events))
-            scored = score_events(run.events, client)
+            scored = score_events(run.events)
             run.add_scores(scored)
             log.info("pipeline_scored", n=len(run.scores))
     else:
@@ -159,13 +191,31 @@ def _pipeline(dry_run: bool = False) -> None:
     log.info("pipeline_synth_start")
     state = synthesize_state(
         scores=run.scores,
-        client=client,
         prior_state=prior_state,
         dry_run=dry_run,
     )
 
+    # FIX I: inject cost/duration/events meta before writing
+    import time as _time
+    usage = get_usage()
+    state["meta"] = {
+        "refresh_cost_usd": usage["estimated_cost_usd"] if not dry_run else None,
+        "refresh_duration_sec": int(_time.monotonic() - _t_start),
+        "events_processed": len(run.scores),
+        "llm_calls": usage["calls"],
+        "cost_note": "estimated" if dry_run else ("sdk" if usage["input_tokens"] > 0 else "cli-estimate"),
+    }
+
     # 5. Write outputs
     state_path = write_state(state)
+
+    # FIX 3: schema validation gate — must pass before history snapshot is written
+    try:
+        validate_state(state_path)
+    except Exception as exc:
+        click.echo(f"ERROR: schema validation failed — state.json NOT promoted. {exc}", err=True)
+        raise SystemExit(1)
+
     hist_path  = write_history_snapshot(state)
 
     # 6. Audit log
@@ -201,9 +251,27 @@ def cli():
 
 @cli.command("refresh")
 @click.option("--dry-run", is_flag=True, default=False,
-              help="Use mock feeds. No ANTHROPIC_API_KEY required.")
-def cmd_refresh(dry_run: bool):
+              help="Use mock feeds. No claude CLI required.")
+@click.option("--force", is_flag=True, default=False,
+              help="Skip the recency guard and always run.")
+def cmd_refresh(dry_run: bool, force: bool):
     """Fetch feeds → score → synthesize → write data/state.json."""
+    # FIX 5: skip if last run was too recent (DST guard)
+    if not force and not dry_run and _is_too_recent():
+        raise SystemExit(0)
+
+    if not dry_run:
+        import os as _os
+        if not _os.environ.get("ANTHROPIC_API_KEY"):
+            try:
+                from .claude_cli import find_claude_cli
+                cli_resolved = find_claude_cli(CLAUDE_CLI_PATH)
+                click.echo(f"Using claude CLI at {cli_resolved}")
+            except Exception as exc:
+                click.echo(f"ERROR: {exc}", err=True)
+                raise SystemExit(1)
+        else:
+            click.echo("Using Anthropic SDK backend (ANTHROPIC_API_KEY set)")
     _pipeline(dry_run=dry_run)
 
 

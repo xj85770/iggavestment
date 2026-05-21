@@ -2,9 +2,15 @@ name: Refresh Iggavestment Data
 
 on:
   schedule:
-    # 5am PT = 12:00 UTC during PDT (UTC-7)
-    # 5pm PT = 00:00 UTC during PDT
-    - cron: '0 12,0 * * *'
+    # FIX 5: Four cron entries covering both PDT (UTC-7) and PST (UTC-8).
+    # PDT (Mar-Nov): 5am PT = 12 UTC, 5pm PT = 00 UTC
+    - cron: '0 12 * * *'
+    - cron: '0 0 * * *'
+    # PST (Nov-Mar): 5am PT = 13 UTC, 5pm PT = 01 UTC
+    - cron: '0 13 * * *'
+    - cron: '0 1 * * *'
+    # The pipeline's recency guard (cli.py _is_too_recent) skips double-runs
+    # during DST transitions when two entries fire within 5 hours.
   workflow_dispatch:   # allow manual trigger
 
 concurrency:
@@ -31,8 +37,8 @@ jobs:
       - name: Install uv
         run: pip install uv
 
-      - name: Install dependencies
-        run: uv sync
+      - name: Install dependencies (with CI extras for Anthropic SDK)
+        run: uv sync --frozen --extra ci
 
       - name: Run pipeline
         env:
@@ -42,7 +48,15 @@ jobs:
             echo "ANTHROPIC_API_KEY not set — running dry-run"
             uv run iggavestment refresh --dry-run
           else
+            echo "ANTHROPIC_API_KEY present — using SDK backend"
             uv run iggavestment refresh
+          fi
+
+      - name: Abort if invalid state exists (FIX 3 schema gate)
+        run: |
+          if [ -f data/state.invalid.json ]; then
+            echo "ERROR: data/state.invalid.json present — schema validation failed, aborting commit"
+            exit 1
           fi
 
       - name: Commit and push updated data
@@ -50,6 +64,7 @@ jobs:
           git config user.name  "iggavestment-bot"
           git config user.email "bot@iggavestment.local"
           git add data/state.json data/history/ data/audit.jsonl || true
+          git diff --stat data/ || true
           if git diff --staged --quiet; then
             echo "No data changes — skipping commit"
           else

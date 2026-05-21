@@ -1,17 +1,34 @@
 {
   "version": "1.0.0",
-  "generated_at": "2026-05-20T22:04:29.422876-07:00",
+  "generated_at": "2026-05-20T22:50:23.007143-07:00",
   "next_refresh_at": "2026-05-21T05:00:00-07:00",
-  "stale": false,
-  "stale_feeds": [],
+  "stale": true,
+  "stale_feeds": [
+    "edgar_remx",
+    "fda_press",
+    "usda_crop_progress",
+    "nrc_licensing",
+    "edgar_energy",
+    "edgar_robotics",
+    "doe_nuclear",
+    "edgar_bio",
+    "commerce_chips",
+    "edgar_semis",
+    "fed_register_chips",
+    "epa_rvo",
+    "edgar_space",
+    "fed_register_autonomous",
+    "doe_lpo",
+    "edgar_ag"
+  ],
   "degraded": false,
   "themes": [
     {
       "id": "bio",
       "name": "Biotech (XBI)",
-      "conviction": 82,
-      "tilt_pct": 3.0,
-      "weekly_dollars": 41.2,
+      "conviction": 50,
+      "tilt_pct": 0.0,
+      "weekly_dollars": 40.0,
       "account": "Roth",
       "core_tickers": [
         "XBI"
@@ -26,24 +43,9 @@
         "ARKG",
         "MRNA"
       ],
-      "sparkline": [
-        52,
-        48,
-        60,
-        65,
-        68,
-        62,
-        70,
-        72,
-        75,
-        72,
-        72,
-        72,
-        72,
-        82
-      ],
-      "why": "Dry-run fallback. Conviction 82/100 based on 2 events.",
-      "thesis_state": "intact",
+      "sparkline": [],
+      "why": "Dry-run fallback. Conviction 50/100 based on 2 events.",
+      "thesis_state": "weakening",
       "kill_flags_triggered": [],
       "top_events": [
         {
@@ -60,14 +62,23 @@
           "direction": 1,
           "rationale": "Mock score: Phase 3 ASCO readout — oncology trial primary endpoint met i"
         }
-      ]
+      ],
+      "has_signal": false,
+      "event_count_7d": 2,
+      "event_count_14d": 2,
+      "confidence": "low",
+      "last_change": {
+        "direction": "new",
+        "delta": 0,
+        "since_date": ""
+      }
     },
     {
       "id": "tech_ai",
       "name": "Tech/AI Semis (SMH)",
-      "conviction": 82,
-      "tilt_pct": 3.0,
-      "weekly_dollars": 41.2,
+      "conviction": 50,
+      "tilt_pct": 0.0,
+      "weekly_dollars": 40.0,
       "account": "Roth",
       "core_tickers": [
         "SMH"
@@ -82,24 +93,9 @@
         "MRVL",
         "ASML"
       ],
-      "sparkline": [
-        62,
-        70,
-        72,
-        75,
-        74,
-        78,
-        76,
-        80,
-        79,
-        78,
-        78,
-        78,
-        78,
-        82
-      ],
-      "why": "Dry-run fallback. Conviction 82/100 based on 2 events.",
-      "thesis_state": "intact",
+      "sparkline": [],
+      "why": "Dry-run fallback. Conviction 50/100 based on 2 events.",
+      "thesis_state": "weakening",
       "kill_flags_triggered": [],
       "top_events": [
         {
@@ -116,14 +112,23 @@
           "direction": 1,
           "rationale": "Mock score: BIS export controls tightened — H20 ban absorbed in NVDA Q2 "
         }
-      ]
+      ],
+      "has_signal": false,
+      "event_count_7d": 2,
+      "event_count_14d": 2,
+      "confidence": "low",
+      "last_change": {
+        "direction": "new",
+        "delta": 0,
+        "since_date": ""
+      }
     },
     {
       "id": "robotics",
       "name": "Robotics (ISRG + ABB)",
-      "conviction": 82,
-      "tilt_pct": 3.0,
-      "weekly_dollars": 25.75,
+      "conviction": 50,
+      "tilt_pct": 0.0,
+      "weekly_dollars": 25.0,
       "account": "Roth",
       "core_tickers": [
         "ISRG",
@@ -137,24 +142,9 @@
       "watch_tickers": [
         "TSLA"
       ],
-      "sparkline": [
-        52,
-        48,
-        44,
-        42,
-        46,
-        45,
-        43,
-        47,
-        45,
-        44,
-        45,
-        45,
-        45,
-        82
-      ],
-      "why": "Dry-run fallback. Conviction 82/100 based on 1 events.",
-      "thesis_state": "intact",
+      "sparkline": [],
+      "why": "Dry-run fallback. Conviction 50/100 based on 1 events.",
+      "thesis_state": "weakening",
       "kill_flags_triggered": [],
       "top_events": [
         {
@@ -164,14 +154,23 @@
           "direction": 1,
           "rationale": "Mock score: DoD awards $800M Replicator 2.0 autonomous systems contract"
         }
-      ]
+      ],
+      "has_signal": false,
+      "event_count_7d": 1,
+      "event_count_14d": 1,
+      "confidence": "low",
+      "last_change": {
+        "direction": "new",
+        "delta": 0,
+        "since_date": ""
+      }
     },
     {
       "id": "energy",
       "name": "Energy/Nuclear/LNG",
-      "conviction": 82,
-      "tilt_pct": 3.0,
-      "weekly_dollars": 30.9,
+      "conviction": 50,
+      "tilt_pct": 0.0,
+      "weekly_dollars": 30.0,
       "account": "Roth",
       "core_tickers": [
         "URA",
@@ -188,24 +187,9 @@
         "TLN",
         "NNE"
       ],
-      "sparkline": [
-        44,
-        50,
-        52,
-        55,
-        53,
-        56,
-        58,
-        60,
-        59,
-        58,
-        58,
-        58,
-        58,
-        82
-      ],
-      "why": "Dry-run fallback. Conviction 82/100 based on 2 events.",
-      "thesis_state": "intact",
+      "sparkline": [],
+      "why": "Dry-run fallback. Conviction 50/100 based on 2 events.",
+      "thesis_state": "weakening",
       "kill_flags_triggered": [],
       "top_events": [
         {
@@ -222,13 +206,22 @@
           "direction": 1,
           "rationale": "Mock score: Uranium spot $84.50/lb — Kazatomprom value-over-volume stanc"
         }
-      ]
+      ],
+      "has_signal": false,
+      "event_count_7d": 2,
+      "event_count_14d": 2,
+      "confidence": "low",
+      "last_change": {
+        "direction": "new",
+        "delta": 0,
+        "since_date": ""
+      }
     },
     {
       "id": "space",
       "name": "Space (RKLB/ASTS)",
-      "conviction": 82,
-      "tilt_pct": 0,
+      "conviction": 50,
+      "tilt_pct": 0.0,
       "weekly_dollars": 30.0,
       "account": "Taxable",
       "core_tickers": [
@@ -243,24 +236,9 @@
       "watch_tickers": [
         "UFO"
       ],
-      "sparkline": [
-        55,
-        60,
-        62,
-        64,
-        66,
-        62,
-        60,
-        63,
-        65,
-        65,
-        65,
-        65,
-        65,
-        82
-      ],
-      "why": "Dry-run fallback. Conviction 82/100 based on 1 events.",
-      "thesis_state": "intact",
+      "sparkline": [],
+      "why": "Dry-run fallback. Conviction 50/100 based on 1 events.",
+      "thesis_state": "weakening",
       "kill_flags_triggered": [],
       "top_events": [
         {
@@ -270,14 +248,23 @@
           "direction": 1,
           "rationale": "Mock score: RKLB wins $805M SDA Tranche 3 Tracking Layer contract"
         }
-      ]
+      ],
+      "has_signal": false,
+      "event_count_7d": 1,
+      "event_count_14d": 1,
+      "confidence": "low",
+      "last_change": {
+        "direction": "new",
+        "delta": 0,
+        "since_date": ""
+      }
     },
     {
       "id": "rare_earth",
       "name": "Rare Earth (MP/LYC/USAR)",
-      "conviction": 82,
-      "tilt_pct": 3.0,
-      "weekly_dollars": 25.75,
+      "conviction": 50,
+      "tilt_pct": 0.0,
+      "weekly_dollars": 25.0,
       "account": "Taxable",
       "core_tickers": [
         "MP",
@@ -293,24 +280,9 @@
         "Centrus (LEU)",
         "Iluka (ILKAY)"
       ],
-      "sparkline": [
-        40,
-        42,
-        45,
-        50,
-        55,
-        60,
-        62,
-        65,
-        68,
-        68,
-        68,
-        68,
-        68,
-        82
-      ],
-      "why": "Dry-run fallback. Conviction 82/100 based on 1 events.",
-      "thesis_state": "intact",
+      "sparkline": [],
+      "why": "Dry-run fallback. Conviction 50/100 based on 1 events.",
+      "thesis_state": "weakening",
       "kill_flags_triggered": [],
       "top_events": [
         {
@@ -320,14 +292,23 @@
           "direction": 1,
           "rationale": "Mock score: MP Materials DoD $400M convertible preferred — NdFeB plant F"
         }
-      ]
+      ],
+      "has_signal": false,
+      "event_count_7d": 1,
+      "event_count_14d": 1,
+      "confidence": "low",
+      "last_change": {
+        "direction": "new",
+        "delta": 0,
+        "since_date": ""
+      }
     },
     {
       "id": "food_ag",
       "name": "Food/Ag (NTR/CTVA/DBA)",
-      "conviction": 82,
-      "tilt_pct": 3.0,
-      "weekly_dollars": 20.6,
+      "conviction": 50,
+      "tilt_pct": 0.0,
+      "weekly_dollars": 20.0,
       "account": "Taxable",
       "core_tickers": [
         "NTR",
@@ -343,24 +324,9 @@
         "IPI",
         "YARIY"
       ],
-      "sparkline": [
-        55,
-        52,
-        48,
-        45,
-        50,
-        52,
-        50,
-        48,
-        50,
-        50,
-        50,
-        50,
-        50,
-        82
-      ],
-      "why": "Dry-run fallback. Conviction 82/100 based on 1 events.",
-      "thesis_state": "intact",
+      "sparkline": [],
+      "why": "Dry-run fallback. Conviction 50/100 based on 1 events.",
+      "thesis_state": "weakening",
       "kill_flags_triggered": [],
       "top_events": [
         {
@@ -370,26 +336,41 @@
           "direction": 1,
           "rationale": "Mock score: USDA WASDE-671: potash demand record Q1 — NTR guidance reaff"
         }
-      ]
+      ],
+      "has_signal": false,
+      "event_count_7d": 1,
+      "event_count_14d": 1,
+      "confidence": "low",
+      "last_change": {
+        "direction": "new",
+        "delta": 0,
+        "since_date": ""
+      }
     }
   ],
+  "reserve": {
+    "sgov_dry_powder": 25.0,
+    "leap_accumulation": 15.0,
+    "total_reserve": 40.0
+  },
   "deploy": {
-    "roth_total": 139.05,
-    "taxable_total": 76.35,
+    "roth_total": 135.0,
+    "taxable_total": 75.0,
+    "reserve_total": 40.0,
     "roth_breakdown": [
       {
         "tickers": [
           "XBI"
         ],
         "theme": "Biotech (XBI)",
-        "amount": 41.2
+        "amount": 40.0
       },
       {
         "tickers": [
           "SMH"
         ],
         "theme": "Tech/AI Semis (SMH)",
-        "amount": 41.2
+        "amount": 40.0
       },
       {
         "tickers": [
@@ -397,7 +378,7 @@
           "ABB"
         ],
         "theme": "Robotics (ISRG + ABB)",
-        "amount": 25.75
+        "amount": 25.0
       },
       {
         "tickers": [
@@ -406,7 +387,7 @@
           "LNG"
         ],
         "theme": "Energy/Nuclear/LNG",
-        "amount": 30.9
+        "amount": 30.0
       }
     ],
     "taxable_breakdown": [
@@ -425,7 +406,7 @@
           "USAR"
         ],
         "theme": "Rare Earth (MP/LYC/USAR)",
-        "amount": 25.75
+        "amount": 25.0
       },
       {
         "tickers": [
@@ -434,7 +415,7 @@
           "DBA"
         ],
         "theme": "Food/Ag (NTR/CTVA/DBA)",
-        "amount": 20.6
+        "amount": 20.0
       }
     ],
     "leap_progress": {
@@ -444,17 +425,29 @@
     }
   },
   "kill_switches": {
-    "max_drawdown_pct": -8.5,
-    "rolling_hit_rate": 0.52,
-    "alpha_drawdown_pct": -1.2,
     "triggered": false,
-    "warnings": []
+    "warnings": [],
+    "status": "data_collecting",
+    "weeks_collected": 1,
+    "weeks_needed": 30,
+    "max_drawdown_pct": null,
+    "rolling_hit_rate": null,
+    "alpha_drawdown_pct": null
   },
   "metrics": {
     "total_contributed_ytd": 5250,
     "total_value": 5420,
-    "vs_spy_ytd_pct": 0.0,
-    "vs_equal_weight_pct": 0.0,
-    "tilt_alpha_ytd_pct": 0.0
+    "vs_spy_ytd_pct": null,
+    "vs_equal_weight_pct": null,
+    "tilt_alpha_ytd_pct": null,
+    "validation_status": "collecting",
+    "weeks_collected": 0
+  },
+  "meta": {
+    "refresh_cost_usd": null,
+    "refresh_duration_sec": 0,
+    "events_processed": 10,
+    "llm_calls": 0,
+    "cost_note": "estimated"
   }
 }

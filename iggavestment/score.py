@@ -1,20 +1,19 @@
 """
-Score events via Claude Haiku with cached system prompt.
-Batches of SCORE_BATCH. 429 → 60s backoff x3.
+Score events via Claude Haiku using the local claude CLI.
+Batches of SCORE_BATCH. Non-zero exit → deterministic fallback per event.
 """
 from __future__ import annotations
 
 import json
 import re
-import time
 from datetime import datetime, timezone
 from pathlib import Path
 
-import anthropic
 import structlog
 
-from .config import SCORE_BATCH, SCORE_MODEL, THEMES
+from .config import SCORE_BATCH, SCORE_MODEL, THEMES, CLAUDE_CLI_PATH, CLAUDE_CLI_TIMEOUT_SEC
 from .normalize import Event, Score
+from .llm import call_claude, ClaudeCliError
 
 log = structlog.get_logger(__name__)
 
@@ -72,69 +71,70 @@ def _extract_json(text: str) -> str:
     raise ValueError(f"No JSON array found in: {text[:200]}")
 
 
-def score_events(events: list[Event], client: anthropic.Anthropic) -> list[Score]:
-    """Score all events in batches. Returns Score list."""
+def _mock_score(e: Event, now_iso: str) -> Score:
+    """Deterministic fallback when CLI call fails for an event."""
+    return Score(
+        event_id=e.id, theme=e.theme, scored_at=now_iso,
+        salience=30, direction=0,
+        rationale="[fallback] CLI scoring failed; neutral placeholder.",
+        model="fallback",
+    )
+
+
+def score_events(events: list[Event]) -> list[Score]:
+    """Score all events in batches via claude CLI. Returns Score list."""
     scored: list[Score] = []
     now_iso = datetime.now(timezone.utc).isoformat()
     for chunk in _chunks(events, SCORE_BATCH):
-        result = _score_chunk(chunk, client, now_iso)
+        result = _score_chunk(chunk, now_iso)
         scored.extend(result)
     return scored
 
 
-def _score_chunk(chunk: list[Event], client: anthropic.Anthropic, now_iso: str) -> list[Score]:
+def _score_chunk(chunk: list[Event], now_iso: str) -> list[Score]:
     user_lines = []
     for e in chunk:
         user_lines.append(
             f"[{e.id[:8]}] theme={e.theme} pub={e.published_at[:10]}\n"
             f"TITLE: {e.title}\nBODY: {e.body[:1500]}"
         )
-    user_content = f"Score these {len(chunk)} events. Return JSON array in order.\n\n" + "\n\n---\n\n".join(user_lines)
+    user_content = (
+        f"Score these {len(chunk)} events. Return JSON array in order.\n\n"
+        + "\n\n---\n\n".join(user_lines)
+    )
 
-    for attempt in range(3):
-        try:
-            resp = client.messages.create(
-                model=SCORE_MODEL,
-                max_tokens=2000,
-                system=[{
-                    "type": "text",
-                    "text": SCORE_SYSTEM_PROMPT,
-                    "cache_control": {"type": "ephemeral"},
-                }],
-                messages=[{"role": "user", "content": user_content}],
-            )
-            raw = resp.content[0].text
-            arr = json.loads(_extract_json(raw))
-            scores = []
-            for e, s in zip(chunk, arr):
-                try:
-                    scores.append(Score(
-                        event_id=e.id, theme=e.theme, scored_at=now_iso,
-                        salience=int(s.get("salience", 0)),
-                        direction=int(s.get("direction", 0)),
-                        rationale=str(s.get("rationale", ""))[:240],
-                        model=SCORE_MODEL,
-                    ))
-                except Exception as exc:
-                    log.warning("score_parse_row_failed", event_id=e.id[:8], err=str(exc))
-            log.info("chunk_scored", n=len(scores),
-                     cache_read=getattr(resp.usage, "cache_read_input_tokens", 0))
-            return scores
-        except anthropic.RateLimitError:
-            if attempt < 2:
-                log.warning("rate_limit_backoff", attempt=attempt)
-                time.sleep(60)
-            else:
-                log.error("score_chunk_rate_limit_exhausted", n=len(chunk))
-                return []
-        except anthropic.APIStatusError as exc:
-            if attempt < 2:
-                log.warning("api_error_retry", attempt=attempt, status=exc.status_code)
-                time.sleep(10 * (attempt + 1))
-            else:
-                log.error("score_chunk_api_failed", err=str(exc), n=len(chunk))
-                return []
-        except (json.JSONDecodeError, ValueError) as exc:
-            log.error("score_parse_failed", err=str(exc))
-            return []
-    return []
+    try:
+        raw = call_claude(
+            user_content,
+            model=SCORE_MODEL,
+            system=SCORE_SYSTEM_PROMPT,
+            max_tokens=2000,
+            timeout=CLAUDE_CLI_TIMEOUT_SEC,
+            cli_path=CLAUDE_CLI_PATH,
+        )
+        arr = json.loads(_extract_json(raw))
+        scores = []
+        for e, s in zip(chunk, arr):
+            try:
+                scores.append(Score(
+                    event_id=e.id, theme=e.theme, scored_at=now_iso,
+                    salience=int(s.get("salience", 0)),
+                    direction=int(s.get("direction", 0)),
+                    rationale=str(s.get("rationale", ""))[:240],
+                    model=SCORE_MODEL,
+                ))
+            except Exception as exc:
+                log.warning("score_parse_row_failed", event_id=e.id[:8], err=str(exc))
+                scores.append(_mock_score(e, now_iso))
+        log.info("chunk_scored", n=len(scores))
+        return scores
+    except ClaudeCliError as exc:
+        log.warning("score_chunk_cli_failed", err=str(exc), n=len(chunk))
+    except (json.JSONDecodeError, ValueError) as exc:
+        log.warning("score_chunk_parse_failed", err=str(exc), n=len(chunk))
+    except Exception as exc:
+        log.error("score_chunk_unexpected", err=str(exc), n=len(chunk))
+
+    # Graceful degrade: return fallback scores for every event in chunk
+    log.warning("score_chunk_fallback", n=len(chunk))
+    return [_mock_score(e, now_iso) for e in chunk]

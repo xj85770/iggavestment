@@ -177,6 +177,11 @@ SYNTH_MODEL  = "claude-haiku-4-5"    # cost-frugal; upgrade to sonnet if needed
 SCORE_BATCH  = 20
 MAX_EVENTS   = 1000
 
+# ── Claude CLI config ─────────────────────────────────────────────────────────
+
+CLAUDE_CLI_PATH        = os.environ.get("CLAUDE_CLI_PATH", "claude")
+CLAUDE_CLI_TIMEOUT_SEC = int(os.environ.get("CLAUDE_CLI_TIMEOUT_SEC", "120"))
+
 # ── Tilt table ────────────────────────────────────────────────────────────────
 
 TILT_TABLE = [
@@ -188,6 +193,15 @@ TILT_TABLE = [
 
 AI_CAPEX_THEMES = {"tech_ai", "space"}
 AI_CAPEX_CAP    = 0.03
+
+# ── Signal quality ─────────────────────────────────────────────────────────────
+
+# Minimum events in the 7-day window for a theme to count as "has_signal".
+# Below this threshold the theme is treated as anecdote, not signal:
+# conviction is forced to 50 (neutral) and tilt to 0%.
+# Tunable via env var for experiments — default 3 is empirical:
+# 1-2 events is one journalist covering one story, not a cross-source pattern.
+HAS_SIGNAL_MIN_EVENTS: int = int(os.environ.get("IGG_HAS_SIGNAL_MIN_EVENTS", "3"))
 
 EQUAL_WEIGHT_USD = 250.0 / len(THEMES)   # ~$35.71
 
@@ -207,11 +221,9 @@ def next_refresh_pt() -> str:
     tomorrow = now_pt.replace(hour=5, minute=0, second=0, microsecond=0) + timedelta(days=1)
     return tomorrow.isoformat()
 
-# ── Anthropic client factory ──────────────────────────────────────────────────
+# ── Claude CLI factory (replaces Anthropic SDK client) ───────────────────────
 
-def get_anthropic_client():
-    import anthropic
-    key = os.environ.get("ANTHROPIC_API_KEY")
-    if not key:
-        raise RuntimeError("ANTHROPIC_API_KEY not set. Add it to .env or GH Secrets.")
-    return anthropic.Anthropic(api_key=key)
+def get_claude_cli_path() -> str:
+    """Return the resolved path to the claude binary."""
+    from .claude_cli import find_claude_cli
+    return find_claude_cli(CLAUDE_CLI_PATH)

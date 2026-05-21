@@ -417,6 +417,8 @@ html, body {
         <div class="stat-card"><div class="stat-label">vs SPY YTD</div><div class="stat-value" id="stat-spy">—</div></div>
         <div class="stat-card"><div class="stat-label">Tilt α YTD</div><div class="stat-value" id="stat-alpha">—</div></div>
       </div>
+      <!-- FIX 7: validation status bar — hidden when live -->
+      <div id="validationStatusBar" style="display:none;font-size:11px;color:var(--text-3);padding:4px 16px 8px;line-height:1.4"></div>
       <div class="section-label" id="memoSectionLabel">Loading themes…</div>
       <div id="themeCards"><div class="loading-placeholder">Fetching latest data…</div></div>
     </div>
@@ -445,6 +447,8 @@ html, body {
     <!-- ── Screen 3: History ── -->
     <div class="screen" id="screen-history">
       <div class="page-header"><div class="label">Kill Switches &amp; Status</div><h1>Health</h1></div>
+      <!-- FIX 4: data-collecting notice -->
+      <div id="ks-collecting-notice" style="display:none;font-size:11px;color:var(--text-3);padding:6px 14px 2px;line-height:1.4"></div>
       <div class="kill-status-table" id="killStatusTable">
         <div class="ks-row header"><div>Kill Switch</div><div>Threshold</div><div>Current</div><div>Status</div></div>
         <div class="ks-row"><div class="ks-name">Max drawdown 12mo</div><div class="ks-val">&gt;25%</div><div class="ks-val" id="ks-drawdown">—</div><div class="ks-status ok" id="ks-drawdown-status">OK</div></div>
@@ -483,7 +487,7 @@ html, body {
     </button>
   </nav>
 
-  <footer class="site-footer">
+  <footer class="site-footer" id="site-footer">
     v1.0.0 · Iggavestment · <a href="https://github.com/xavierdjones/iggavestment" target="_blank" rel="noopener">GitHub</a>
   </footer>
 
@@ -508,9 +512,10 @@ const FALLBACK_STATE = {
     { id: "rare_earth", name: "Rare Earth (MP/LYC)",   conviction: 50, tilt_pct: 0,   weekly_dollars: 25.00, account: "Taxable", core_tickers: ["MP","LYSCF","USAR"], bench_tickers: ["UUUU"],       watch_tickers: [],         sparkline: [50,50,50,50,50,50,50,50,50,50,50,50,50,50], why: "Fallback — live data unavailable.", thesis_state: "intact", kill_flags_triggered: [], top_events: [] },
     { id: "food_ag",    name: "Food/Ag (NTR/CTVA)",    conviction: 50, tilt_pct: 0,   weekly_dollars: 20.00, account: "Taxable", core_tickers: ["NTR","CTVA","DBA"], bench_tickers: ["MOS","CF"],    watch_tickers: ["IPI"],    sparkline: [50,50,50,50,50,50,50,50,50,50,50,50,50,50], why: "Fallback — live data unavailable.", thesis_state: "intact", kill_flags_triggered: [], top_events: [] },
   ],
-  deploy: { roth_total: 135, taxable_total: 75, roth_breakdown: [], taxable_breakdown: [], leap_progress: { current: 0, target: 2500, candidate: "MSFT" } },
-  kill_switches: { max_drawdown_pct: 0, rolling_hit_rate: 0, alpha_drawdown_pct: 0, triggered: false, warnings: [] },
-  metrics: { total_contributed_ytd: 0, total_value: 0, vs_spy_ytd_pct: 0, vs_equal_weight_pct: 0, tilt_alpha_ytd_pct: 0 },
+  reserve: { sgov_dry_powder: 25.00, leap_accumulation: 15.00, total_reserve: 40.00 },
+  deploy: { roth_total: 135, taxable_total: 75, reserve_total: 40, roth_breakdown: [], taxable_breakdown: [], leap_progress: { current: 0, target: 2500, candidate: "MSFT" } },
+  kill_switches: { max_drawdown_pct: null, rolling_hit_rate: null, alpha_drawdown_pct: null, triggered: false, warnings: [], status: "data_collecting", weeks_collected: 0, weeks_needed: 30 },
+  metrics: { total_contributed_ytd: 0, total_value: 0, vs_spy_ytd_pct: null, vs_equal_weight_pct: null, tilt_alpha_ytd_pct: null, validation_status: "collecting", weeks_collected: 0 },
 };
 
 // ─── State ────────────────────────────────────────────────────────────────────
@@ -624,13 +629,26 @@ function tiltChipLabel(tilt_pct) {
   return (tilt_pct > 0 ? '+' : '') + tilt_pct.toFixed(1) + '%';
 }
 
-// ─── Theme cards ──────────────────────────────────────────────────────────────
+// ─── Theme cards (FIX 6: confidence states, FIX 7: cold-start sparkline) ──────
 
 function buildThemeCard(t) {
-  const tiltCls = tiltChipClass(t.tilt_pct);
-  const tiltLbl = tiltChipLabel(t.tilt_pct);
+  // FIX 6: confidence-aware rendering
+  const conf = t.confidence || 'no_data';
+  const noData = conf === 'no_data';
+  const nameStyle = noData ? 'color:var(--text-3)' : '';
 
-  const coreChips = t.core_tickers.map(tk => `<span class="ticker-chip">${tk}</span>`).join('');
+  const tiltCls = noData ? 'flat' : tiltChipClass(t.tilt_pct);
+  const tiltLbl = noData ? 'n/a' : tiltChipLabel(t.tilt_pct);
+
+  // Conviction display: "—" for no_data
+  const convDisplay = noData ? '—' : String(t.conviction);
+
+  // Confidence dot (low=yellow, high=green, no_data/medium=none)
+  let confDot = '';
+  if (conf === 'low')  confDot = '<span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--warn);margin-left:4px;vertical-align:middle"></span>';
+  if (conf === 'high') confDot = '<span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--up);margin-left:4px;vertical-align:middle"></span>';
+
+  const coreChips = t.core_tickers.map(tk => `<span class="ticker-chip"${noData ? ' style="opacity:0.5"' : ''}>${tk}</span>`).join('');
 
   let eventsHTML = '';
   if (t.top_events && t.top_events.length) {
@@ -666,24 +684,51 @@ function buildThemeCard(t) {
     </div>`;
   }
 
+  // FIX 7 + FIX H: cold-start sparkline — empty array → "Building history · week X of 14"
+  let sparklineHTML;
+  if (!t.sparkline || t.sparkline.length === 0) {
+    const weekNum = (t.sparkline && t.sparkline.length > 0) ? t.sparkline.length : (t.event_count_7d > 0 ? 1 : 0);
+    const wk = Math.max(1, Math.min(weekNum, 13));
+    sparklineHTML = `<div style="font-size:10px;color:var(--text-3);text-align:center;width:80px;line-height:1.5"><em>Building history</em><br>week ${wk} of 14</div>`;
+  } else {
+    sparklineHTML = buildSparkline(t.sparkline);
+  }
+  // Override sparkline fill to gray when no_data
+  if (noData) {
+    const wk2 = Math.max(1, Math.min((t.sparkline || []).length || 1, 13));
+    sparklineHTML = `<div style="font-size:10px;color:var(--text-3);text-align:center;width:80px;line-height:1.5"><em>Building history</em><br>week ${wk2} of 14</div>`;
+  }
+
+  // FIX J: last_change caption
+  let lastChangeHTML = '';
+  const lc = t.last_change;
+  if (lc && lc.direction !== 'new' && lc.since_date) {
+    const sign  = lc.delta > 0 ? '+' : '';
+    const arrow = lc.direction === 'up' ? '↑' : lc.direction === 'down' ? '↓' : '→';
+    const clr   = lc.direction === 'up' ? 'var(--up)' : lc.direction === 'down' ? 'var(--dn)' : 'var(--text-3)';
+    lastChangeHTML = `<span style="font-size:10px;color:${clr};margin-left:6px">${arrow} ${sign}${lc.delta} since ${lc.since_date}</span>`;
+  } else if (lc && lc.direction === 'new') {
+    lastChangeHTML = `<span style="font-size:10px;color:var(--text-3);margin-left:6px">new</span>`;
+  }
+
   return `
 <div class="theme-card" id="card-${t.id}">
   <div class="theme-main" onclick="toggleCard('${t.id}')">
     <div style="grid-column:1">
       <div class="theme-top">
-        <div class="theme-name">${t.name}</div>
-        <div class="theme-conviction">${t.conviction}</div>
+        <div class="theme-name" style="${nameStyle}">${t.name}</div>
+        <div class="theme-conviction" style="${noData ? 'color:var(--text-3)' : ''}">${convDisplay}${confDot}${lastChangeHTML}</div>
       </div>
       <div class="theme-mid">
-        <span class="tilt-chip ${tiltCls}">${tiltLbl}</span>
+        <span class="tilt-chip ${tiltCls}" style="${noData ? 'opacity:0.5' : ''}">${tiltLbl}</span>
         <span class="theme-alloc">${fmtMoney(t.weekly_dollars)}/wk</span>
         <span class="theme-account-chip">${t.account}</span>
       </div>
-      <div class="theme-why">${t.why || ''}</div>
+      <div class="theme-why" style="${noData ? 'color:var(--text-3)' : ''}">${noData ? 'No signal this week · accumulating data' : (t.why || '')}</div>
       <div class="tickers-row">${coreChips}</div>
     </div>
     <div class="theme-spark-col">
-      ${buildSparkline(t.sparkline && t.sparkline.length ? t.sparkline : Array(14).fill(50))}
+      ${sparklineHTML}
       <svg class="expand-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
       </svg>
@@ -718,7 +763,7 @@ function toggleCard(id) {
   if (card) card.classList.toggle('expanded');
 }
 
-// ─── Stats ────────────────────────────────────────────────────────────────────
+// ─── Stats (FIX 7: validation status bar) ────────────────────────────────────
 
 function renderStats() {
   if (!DATA) return;
@@ -727,16 +772,46 @@ function renderStats() {
   const val = document.getElementById('stat-value');
   const spy = document.getElementById('stat-spy');
   const alp = document.getElementById('stat-alpha');
+  const vstBar = document.getElementById('validationStatusBar');
 
   if (ytd) ytd.textContent = m.total_contributed_ytd > 0 ? fmtMoney(m.total_contributed_ytd) : '—';
   if (val) val.textContent = m.total_value > 0 ? fmtMoney(m.total_value) : '—';
+
+  const vStatus = m.validation_status || 'collecting';
+  const wk = m.weeks_collected || 0;
+
   if (spy) {
-    spy.textContent = m.vs_spy_ytd_pct ? fmtPct(m.vs_spy_ytd_pct) : '—';
-    spy.className = 'stat-value ' + (m.vs_spy_ytd_pct > 0 ? 'pos' : m.vs_spy_ytd_pct < 0 ? 'neg' : '');
+    if (vStatus === 'live' && m.vs_spy_ytd_pct != null) {
+      spy.textContent = fmtPct(m.vs_spy_ytd_pct);
+      spy.className = 'stat-value ' + (m.vs_spy_ytd_pct > 0 ? 'pos' : m.vs_spy_ytd_pct < 0 ? 'neg' : '');
+    } else {
+      spy.textContent = '—';
+      spy.className = 'stat-value';
+    }
   }
   if (alp) {
-    alp.textContent = m.tilt_alpha_ytd_pct ? fmtPct(m.tilt_alpha_ytd_pct) : '—';
-    alp.className = 'stat-value ' + (m.tilt_alpha_ytd_pct > 0 ? 'pos' : m.tilt_alpha_ytd_pct < 0 ? 'neg' : '');
+    if (vStatus === 'live' && m.tilt_alpha_ytd_pct != null) {
+      alp.textContent = fmtPct(m.tilt_alpha_ytd_pct);
+      alp.className = 'stat-value ' + (m.tilt_alpha_ytd_pct > 0 ? 'pos' : m.tilt_alpha_ytd_pct < 0 ? 'neg' : '');
+    } else {
+      alp.textContent = '—';
+      alp.className = 'stat-value';
+    }
+  }
+
+  // Validation status bar
+  if (vstBar) {
+    let msg = '';
+    if (vStatus === 'collecting') {
+      msg = `Validation: week ${wk} of 104 · no edge claim yet · accumulating data`;
+    } else if (vStatus === 'in_progress') {
+      const alpha = m.tilt_alpha_ytd_pct != null ? ` · preliminary α = ${fmtPct(m.tilt_alpha_ytd_pct)} (not yet significant)` : '';
+      msg = `Validation: week ${wk} of 104${alpha}`;
+    } else {
+      msg = `Validation: live · week ${wk}`;
+    }
+    vstBar.textContent = msg;
+    vstBar.style.display = vStatus !== 'live' ? 'block' : 'none';
   }
 }
 
@@ -751,7 +826,9 @@ function renderDeployScreen() {
 
   const genAt = new Date(DATA.generated_at);
   if (dateLbl) dateLbl.textContent = genAt.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
-  if (totalLine) totalLine.textContent = `${fmtMoney(d.roth_total + d.taxable_total)} total — ${fmtMoney(d.roth_total)} Roth · ${fmtMoney(d.taxable_total)} Taxable`;
+  const deployedTotal = (d.roth_total || 0) + (d.taxable_total || 0);
+  const reserveTotal  = d.reserve_total || (DATA.reserve && DATA.reserve.total_reserve) || 0;
+  if (totalLine) totalLine.textContent = `${fmtMoney(deployedTotal + reserveTotal)} total — ${fmtMoney(d.roth_total)} Roth · ${fmtMoney(d.taxable_total)} Taxable · ${fmtMoney(reserveTotal)} Reserve`;
 
   function lineHTML(l) {
     const tickers = Array.isArray(l.tickers) ? l.tickers.join('+') : (l.ticker || '');
@@ -764,6 +841,26 @@ function renderDeployScreen() {
 
   const rothLines    = (d.roth_breakdown    || DATA.themes.filter(t => t.account === 'Roth').map(t => ({ tickers: t.core_tickers, theme: t.name, amount: t.weekly_dollars })));
   const taxableLines = (d.taxable_breakdown || DATA.themes.filter(t => t.account === 'Taxable').map(t => ({ tickers: t.core_tickers, theme: t.name, amount: t.weekly_dollars })));
+
+  // FIX 1: reserve section
+  const res = DATA.reserve || {};
+  const reserveColHTML = `
+    <div class="deploy-col" style="margin-top:12px">
+      <div class="deploy-col-header">
+        <div class="deploy-col-name" style="color:var(--text-2)">Reserve / Dry Powder</div>
+        <div class="deploy-col-total">${fmtMoney(d.reserve_total || res.total_reserve || 0)}/wk</div>
+      </div>
+      <div class="deploy-line">
+        <div class="deploy-ticker">SGOV</div>
+        <div class="deploy-theme-name">Dry powder</div>
+        <div class="deploy-amount">${fmtMoney(res.sgov_dry_powder || 0)}</div>
+      </div>
+      <div class="deploy-line">
+        <div class="deploy-ticker">LEAP</div>
+        <div class="deploy-theme-name">Accumulation buffer</div>
+        <div class="deploy-amount">${fmtMoney(res.leap_accumulation || 0)}</div>
+      </div>
+    </div>`;
 
   if (cols) cols.innerHTML = `
     <div class="deploy-col">
@@ -779,10 +876,11 @@ function renderDeployScreen() {
         <div class="deploy-col-total">${fmtMoney(d.taxable_total)}</div>
       </div>
       ${taxableLines.map(lineHTML).join('')}
-    </div>`;
+    </div>
+    ${reserveColHTML}`;
 }
 
-// ─── Health / History screen ──────────────────────────────────────────────────
+// ─── Health / History screen (FIX 4: data_collecting state) ──────────────────
 
 function renderHealthScreen() {
   if (!DATA) return;
@@ -794,25 +892,48 @@ function renderHealthScreen() {
   const drawdownSt = document.getElementById('ks-drawdown-status');
   const hitrateSt  = document.getElementById('ks-hitrate-status');
   const alphaSt    = document.getElementById('ks-alpha-status');
+  const ksStatusEl = document.getElementById('ks-collecting-notice');
 
-  if (drawdownEl) drawdownEl.textContent = ks.max_drawdown_pct != null ? ks.max_drawdown_pct.toFixed(1) + '%' : '—';
-  if (hitrateEl)  hitrateEl.textContent  = ks.rolling_hit_rate != null ? (ks.rolling_hit_rate * 100).toFixed(0) + '%' : '—';
-  if (alphaEl)    alphaEl.textContent    = ks.alpha_drawdown_pct != null ? ks.alpha_drawdown_pct.toFixed(2) + '%' : '—';
+  // FIX 4: when data_collecting, show gray "collecting" chips instead of fake values
+  const collecting = ks.status === 'data_collecting';
+  const wkCollected = ks.weeks_collected || 0;
+  const wkNeeded    = ks.weeks_needed || 30;
 
-  if (drawdownSt) { drawdownSt.textContent = ks.triggered ? 'WARN' : 'OK'; drawdownSt.className = 'ks-status ' + (ks.triggered ? 'warn' : 'ok'); }
-  if (hitrateSt)  { hitrateSt.textContent  = 'OK'; hitrateSt.className  = 'ks-status ok'; }
-  if (alphaSt)    { alphaSt.textContent    = 'OK'; alphaSt.className    = 'ks-status ok'; }
+  if (collecting) {
+    const collectingLabel = `Data collecting · week ${wkCollected} of ${wkNeeded}`;
+    if (drawdownEl) drawdownEl.textContent = '—';
+    if (hitrateEl)  hitrateEl.textContent  = '—';
+    if (alphaEl)    alphaEl.textContent    = '—';
+    if (drawdownSt) { drawdownSt.textContent = collectingLabel; drawdownSt.className = 'ks-status collecting'; drawdownSt.style.color = 'var(--text-3)'; }
+    if (hitrateSt)  { hitrateSt.textContent  = collectingLabel; hitrateSt.className  = 'ks-status collecting'; hitrateSt.style.color  = 'var(--text-3)'; }
+    if (alphaSt)    { alphaSt.textContent    = collectingLabel; alphaSt.className    = 'ks-status collecting'; alphaSt.style.color    = 'var(--text-3)'; }
+    if (ksStatusEl) { ksStatusEl.style.display = 'block'; ksStatusEl.textContent = `Kill switches: accumulating ${wkNeeded - wkCollected} more weeks of data before live thresholds activate.`; }
+  } else {
+    if (drawdownEl) drawdownEl.textContent = ks.max_drawdown_pct != null ? ks.max_drawdown_pct.toFixed(1) + '%' : '—';
+    if (hitrateEl)  hitrateEl.textContent  = ks.rolling_hit_rate != null ? (ks.rolling_hit_rate * 100).toFixed(0) + '%' : '—';
+    if (alphaEl)    alphaEl.textContent    = ks.alpha_drawdown_pct != null ? ks.alpha_drawdown_pct.toFixed(2) + '%' : '—';
+    if (drawdownSt) { drawdownSt.textContent = ks.triggered ? 'WARN' : 'OK'; drawdownSt.className = 'ks-status ' + (ks.triggered ? 'warn' : 'ok'); drawdownSt.style.color = ''; }
+    if (hitrateSt)  { hitrateSt.textContent  = 'OK'; hitrateSt.className  = 'ks-status ok'; hitrateSt.style.color = ''; }
+    if (alphaSt)    { alphaSt.textContent    = 'OK'; alphaSt.className    = 'ks-status ok'; alphaSt.style.color = ''; }
+    if (ksStatusEl) ksStatusEl.style.display = 'none';
+  }
 
-  // Sparkline grid
+  // Sparkline grid (FIX 7: cold-start — show "Building history" for empty sparklines)
   const grid = document.getElementById('sparklineGrid');
   if (grid) {
-    grid.innerHTML = DATA.themes.map(t => `
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+    grid.innerHTML = DATA.themes.map(t => {
+      let spkHTML;
+      if (!t.sparkline || t.sparkline.length === 0) {
+        spkHTML = `<span style="font-size:10px;color:var(--text-3);min-width:80px">Building history</span>`;
+      } else {
+        spkHTML = buildSparkline(t.sparkline);
+      }
+      return `<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
         <div style="font-size:11px;color:var(--text-3);width:110px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${t.name.split(' ')[0]}</div>
-        ${buildSparkline(t.sparkline && t.sparkline.length ? t.sparkline : Array(14).fill(50))}
+        ${spkHTML}
         <div style="font-family:var(--text-mono);font-size:12px;color:var(--text);min-width:28px;text-align:right">${t.conviction}</div>
-      </div>`
-    ).join('');
+      </div>`;
+    }).join('');
   }
 
   // Feed status
@@ -860,6 +981,19 @@ function copyDCA() {
 
 // ─── Render all ───────────────────────────────────────────────────────────────
 
+// FIX I: render cost telemetry footer
+function renderFooter() {
+  const footer = document.getElementById('site-footer');
+  if (!footer || !DATA) return;
+  const meta = DATA.meta || {};
+  const cost = meta.refresh_cost_usd != null ? `$${Number(meta.refresh_cost_usd).toFixed(3)}` : '—';
+  const dur  = meta.refresh_duration_sec != null ? `${meta.refresh_duration_sec}s` : '—';
+  const evts = meta.events_processed != null ? `${meta.events_processed} events` : '';
+  const note = meta.cost_note === 'cli-estimate' ? ' (est.)' : '';
+  footer.innerHTML = `v1.0.0 · Iggavestment · <a href="https://github.com/xavierdjones/iggavestment" target="_blank" rel="noopener">GitHub</a>`
+    + (evts ? ` · Last refresh: ${evts} · ${cost}${note} · ${dur} · cron 5am/5pm PT` : '');
+}
+
 function renderAll() {
   renderStatusBar();
   renderKillBanner();
@@ -867,6 +1001,7 @@ function renderAll() {
   renderThemeCards();
   renderDeployScreen();
   renderHealthScreen();
+  renderFooter();
 }
 
 // ─── Boot ─────────────────────────────────────────────────────────────────────
