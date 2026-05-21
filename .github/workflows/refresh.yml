@@ -1,0 +1,71 @@
+name: Refresh Iggavestment Data
+
+on:
+  schedule:
+    # 5am PT = 12:00 UTC during PDT (UTC-7)
+    # 5pm PT = 00:00 UTC during PDT
+    - cron: '0 12,0 * * *'
+  workflow_dispatch:   # allow manual trigger
+
+concurrency:
+  group: refresh
+  cancel-in-progress: true
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Setup Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install uv
+        run: pip install uv
+
+      - name: Install dependencies
+        run: uv sync
+
+      - name: Run pipeline
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          if [ -z "$ANTHROPIC_API_KEY" ]; then
+            echo "ANTHROPIC_API_KEY not set — running dry-run"
+            uv run iggavestment refresh --dry-run
+          else
+            uv run iggavestment refresh
+          fi
+
+      - name: Commit and push updated data
+        run: |
+          git config user.name  "iggavestment-bot"
+          git config user.email "bot@iggavestment.local"
+          git add data/state.json data/history/ data/audit.jsonl || true
+          if git diff --staged --quiet; then
+            echo "No data changes — skipping commit"
+          else
+            git commit -m "chore: refresh data $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            git push
+          fi
+
+      - name: Notify on failure
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `Iggavestment refresh failed ${new Date().toISOString().slice(0,10)}`,
+              body: `Workflow run [#${context.runNumber}](${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}) failed.\n\nCheck the logs for details.`,
+              labels: ['bug'],
+            });

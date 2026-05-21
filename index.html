@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<title>Iggavestment</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ─── Reset & tokens ─── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:          #0e0e10;
+  --bg-card:     #18181b;
+  --bg-lift:     #1f1f24;
+  --bg-lift2:    #27272c;
+  --border:      rgba(255,255,255,0.07);
+  --border-mid:  rgba(255,255,255,0.12);
+
+  --accent:      oklch(0.72 0.22 195);
+  --accent-dim:  oklch(0.55 0.18 195);
+  --accent-soft: oklch(0.72 0.22 195 / 0.12);
+  --accent-glow: oklch(0.72 0.22 195 / 0.25);
+
+  --up:    oklch(0.72 0.18 145);
+  --up-bg: oklch(0.72 0.18 145 / 0.12);
+  --dn:    oklch(0.65 0.20 25);
+  --dn-bg: oklch(0.65 0.20 25 / 0.12);
+  --flat:  oklch(0.62 0.00 0);
+  --flat-bg: rgba(255,255,255,0.06);
+
+  --warn:    oklch(0.72 0.20 70);
+  --warn-bg: oklch(0.72 0.20 70 / 0.12);
+
+  --text:     #f4f4f5;
+  --text-2:   #a1a1aa;
+  --text-3:   #71717a;
+  --text-mono: 'ui-monospace', 'SFMono-Regular', 'Cascadia Code', monospace;
+
+  --radius:   12px;
+  --radius-sm: 6px;
+  --radius-pill: 100px;
+
+  --nav-h: 56px;
+  --safe-b: env(safe-area-inset-bottom, 0px);
+
+  --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+html, body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  overscroll-behavior: none;
+  height: 100%;
+  overflow: hidden;
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  max-width: 420px;
+  margin: 0 auto;
+  position: relative;
+}
+
+@media (min-width: 860px) {
+  :root { --text: #fafafa; --text-2: #c4c4c8; --text-3: #8a8a91; }
+  html { font-size: 17px; }
+  body { display: flex; align-items: flex-start; justify-content: center; padding: 32px 32px 48px; }
+  .app {
+    height: auto;
+    min-height: calc(100dvh - 80px);
+    max-width: 1180px;
+    width: 100%;
+    border: 1px solid var(--border-mid);
+    border-radius: 20px;
+    overflow: hidden;
+    background: var(--bg);
+  }
+  .screens { min-height: 760px; }
+  .screen { padding-bottom: calc(var(--nav-h) + 24px); padding-left: 8px; padding-right: 8px; }
+  .page-header { padding: 32px 32px 12px; }
+  .page-header h1 { font-size: 34px; }
+  .stats-row { grid-template-columns: repeat(4, 1fr); padding: 12px 32px 24px; gap: 12px; }
+  .stat-card .stat-value { font-size: 22px; }
+  .screen#screen-memo > div:not(.page-header):not(.stats-row):not(.status-bar):not(.kill-banner),
+  .themes-container { padding-left: 32px; padding-right: 32px; }
+  .theme-card { margin-bottom: 0 !important; }
+  .screen#screen-memo, .screen#screen-deploy { display: block; }
+  .screen#screen-memo .theme-card {
+    display: inline-block; width: calc(50% - 8px); vertical-align: top; margin: 4px;
+  }
+  .theme-card { font-size: 15px; }
+  .nav { font-size: 13px; }
+  .nav-item { font-size: 12px; }
+  .nav-item svg { width: 26px; height: 26px; }
+}
+
+@media (min-width: 1200px) {
+  .screen#screen-memo .theme-card { width: calc(33.333% - 10px); }
+}
+
+/* ─── Status bar ─── */
+.status-bar {
+  display: flex; align-items: center; gap: 8px;
+  padding: 7px 16px; background: var(--bg-lift);
+  border-bottom: 1px solid var(--border);
+  font-size: 11px; color: var(--text-3);
+  flex-shrink: 0;
+}
+.status-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  flex-shrink: 0;
+}
+.status-dot.green  { background: var(--up); }
+.status-dot.yellow { background: var(--warn); }
+.status-dot.red    { background: var(--dn); }
+.status-bar .status-text { flex: 1; }
+.refresh-btn {
+  background: var(--bg-lift2); border: 1px solid var(--border-mid);
+  color: var(--text-2); font-size: 11px; font-weight: 600;
+  padding: 3px 8px; border-radius: var(--radius-pill);
+  cursor: pointer; transition: background 150ms, color 150ms;
+  -webkit-tap-highlight-color: transparent;
+}
+.refresh-btn:hover { background: var(--accent-soft); color: var(--accent); border-color: var(--accent); }
+.refresh-btn.spinning { animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ─── Error banner ─── */
+.error-banner {
+  background: var(--dn-bg); border-bottom: 1px solid var(--dn);
+  padding: 10px 16px; display: flex; align-items: center; gap: 8px;
+  font-size: 13px; color: var(--dn); font-weight: 500;
+}
+.error-banner.hidden { display: none; }
+
+/* ─── Kill banner ─── */
+.kill-banner {
+  background: var(--dn-bg); border-bottom: 1px solid var(--dn);
+  padding: 10px 16px; display: flex; align-items: center; gap: 8px;
+  font-size: 13px; color: var(--dn); font-weight: 500;
+}
+.kill-banner.hidden { display: none; }
+.kill-banner svg, .error-banner svg { flex-shrink: 0; width: 16px; height: 16px; }
+
+/* ─── Screen container ─── */
+.screens { flex: 1; overflow: hidden; position: relative; }
+.screen {
+  position: absolute; inset: 0; overflow-y: auto; overflow-x: hidden;
+  padding-bottom: calc(var(--nav-h) + var(--safe-b) + 16px);
+  opacity: 0; pointer-events: none; transform: translateY(8px);
+  transition: opacity 180ms var(--ease-out), transform 180ms var(--ease-out);
+  -webkit-overflow-scrolling: touch;
+}
+.screen.active { opacity: 1; pointer-events: all; transform: none; }
+
+/* ─── Bottom nav ─── */
+.nav {
+  height: calc(var(--nav-h) + var(--safe-b)); padding-bottom: var(--safe-b);
+  background: var(--bg-card); border-top: 1px solid var(--border);
+  display: flex; align-items: center; flex-shrink: 0; position: relative; z-index: 10;
+}
+.nav-item {
+  flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px;
+  padding: 8px 0; cursor: pointer; border: none; background: none;
+  color: var(--text-3); font-size: 10px; font-weight: 500; letter-spacing: 0.04em;
+  text-transform: uppercase; transition: color 150ms; -webkit-tap-highlight-color: transparent;
+}
+.nav-item.active { color: var(--accent); }
+.nav-item svg { width: 22px; height: 22px; stroke-width: 1.5; }
+
+/* ─── Page header ─── */
+.page-header { padding: 20px 16px 8px; }
+.page-header .label {
+  font-size: 11px; font-weight: 600; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--text-3); margin-bottom: 4px;
+}
+.page-header h1 { font-size: 26px; font-weight: 600; letter-spacing: -0.02em; color: var(--text); }
+
+/* ─── Stats row ─── */
+.stats-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 8px 16px 16px; }
+.stat-card {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 12px 14px;
+}
+.stat-card .stat-label {
+  font-size: 10px; font-weight: 600; letter-spacing: 0.07em;
+  text-transform: uppercase; color: var(--text-3); margin-bottom: 4px;
+}
+.stat-card .stat-value {
+  font-family: var(--text-mono); font-size: 18px; font-weight: 600;
+  font-variant-numeric: tabular-nums; color: var(--text); letter-spacing: -0.02em;
+}
+.stat-card .stat-value.pos { color: var(--up); }
+.stat-card .stat-value.neg { color: var(--dn); }
+
+/* ─── Section label ─── */
+.section-label {
+  padding: 4px 16px 10px; font-size: 11px; font-weight: 600;
+  letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-3);
+}
+
+/* ─── Theme card ─── */
+.theme-card {
+  margin: 0 10px 8px; background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius); overflow: hidden; transition: border-color 200ms;
+}
+.theme-card.expanded { border-color: var(--border-mid); }
+
+.theme-main {
+  padding: 14px 14px 12px; display: grid;
+  grid-template-columns: 1fr auto; grid-template-rows: auto auto auto;
+  cursor: pointer; -webkit-tap-highlight-color: transparent; user-select: none;
+}
+.theme-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+.theme-name { font-size: 15px; font-weight: 600; color: var(--text); letter-spacing: -0.01em; }
+.theme-conviction {
+  font-family: var(--text-mono); font-size: 26px; font-weight: 700;
+  font-variant-numeric: tabular-nums; letter-spacing: -0.03em; color: var(--text); line-height: 1;
+}
+.theme-mid { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }
+.tilt-chip {
+  display: inline-flex; align-items: center; padding: 2px 8px;
+  border-radius: var(--radius-pill); font-size: 12px; font-weight: 600;
+  font-family: var(--text-mono); font-variant-numeric: tabular-nums;
+}
+.tilt-chip.up   { background: var(--up-bg); color: var(--up); }
+.tilt-chip.dn   { background: var(--dn-bg); color: var(--dn); }
+.tilt-chip.flat { background: var(--flat-bg); color: var(--flat); }
+.theme-alloc {
+  font-family: var(--text-mono); font-size: 14px; font-weight: 500;
+  color: var(--text); font-variant-numeric: tabular-nums;
+}
+.theme-account-chip {
+  font-size: 11px; font-weight: 600; color: var(--text-3);
+  background: var(--bg-lift); padding: 2px 7px;
+  border-radius: var(--radius-pill); margin-left: auto;
+}
+.theme-why { font-size: 13px; color: var(--text-2); line-height: 1.45; margin-bottom: 8px; }
+.tickers-row { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 4px; }
+.ticker-chip {
+  font-size: 11px; font-weight: 600; font-family: var(--text-mono);
+  color: var(--accent); background: var(--accent-soft);
+  padding: 2px 7px; border-radius: var(--radius-pill); letter-spacing: 0.02em;
+}
+.ticker-chip.bench { color: var(--text-3); background: var(--bg-lift2); border: 1px solid var(--border-mid); }
+.ticker-chip.watch { color: oklch(0.72 0.18 60); background: oklch(0.72 0.18 60 / 0.1); border: 1px dashed oklch(0.72 0.18 60 / 0.4); }
+.ticker-tier-label {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase;
+  color: var(--text-3); margin-bottom: 4px; margin-top: 8px;
+}
+
+/* sparkline column */
+.theme-spark-col {
+  grid-row: 1 / 4; grid-column: 2; display: flex;
+  flex-direction: column; align-items: flex-end; justify-content: space-between;
+  padding-left: 12px; padding-top: 2px;
+}
+.sparkline { width: 80px; height: 32px; }
+.spark-line { fill: none; stroke: var(--accent); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; opacity: 0.8; }
+.spark-area { fill: var(--accent-soft); }
+.expand-chevron {
+  width: 16px; height: 16px; stroke: var(--text-3); stroke-width: 1.5;
+  transition: transform 200ms var(--spring); flex-shrink: 0;
+}
+.theme-card.expanded .expand-chevron { transform: rotate(180deg); }
+
+/* expanded panel */
+.theme-events {
+  max-height: 0; overflow: hidden;
+  transition: max-height 320ms var(--ease-out);
+  border-top: 0px solid var(--border);
+}
+.theme-card.expanded .theme-events {
+  max-height: 1200px;
+  border-top: 1px solid var(--border);
+}
+.events-inner { padding: 12px 14px; display: flex; flex-direction: column; gap: 10px; }
+.event-item { display: flex; gap: 10px; }
+.event-dot {
+  width: 6px; height: 6px; border-radius: 50%; background: var(--accent);
+  flex-shrink: 0; margin-top: 6px;
+}
+.event-dot.up { background: var(--up); }
+.event-dot.dn { background: var(--dn); }
+.event-text { font-size: 13px; color: var(--text-2); line-height: 1.4; }
+.event-link { font-size: 11px; color: var(--accent-dim); font-weight: 500; display: block; margin-top: 2px; text-decoration: none; }
+.kill-flag-chip {
+  font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: var(--radius-pill);
+  background: var(--dn-bg); color: var(--dn); border: 1px solid oklch(0.65 0.20 25 / 0.3);
+  margin-right: 4px; margin-bottom: 4px; display: inline-block;
+}
+.bench-section { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); }
+.bench-section-title {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--text-3); margin-bottom: 8px;
+}
+.bench-ticker-row { display: flex; flex-wrap: wrap; gap: 6px; }
+
+/* ─── Deploy screen ─── */
+.deploy-header { padding: 20px 16px 6px; }
+.deploy-header .week-label { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-3); margin-bottom: 4px; }
+.deploy-header h2 { font-size: 22px; font-weight: 600; letter-spacing: -0.02em; }
+.deploy-header .total-line { font-family: var(--text-mono); font-size: 13px; color: var(--text-2); margin-top: 4px; }
+.deploy-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 12px 10px; }
+.deploy-col { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+.deploy-col-header { padding: 10px 12px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+.deploy-col-name { font-size: 12px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; }
+.deploy-col-name.roth { color: var(--accent); }
+.deploy-col-name.taxable { color: var(--up); }
+.deploy-col-total { font-family: var(--text-mono); font-size: 13px; font-weight: 600; color: var(--text-2); }
+.deploy-line { display: flex; align-items: center; justify-content: space-between; padding: 9px 12px; border-bottom: 1px solid var(--border); gap: 6px; }
+.deploy-line:last-child { border-bottom: none; }
+.deploy-ticker { font-family: var(--text-mono); font-size: 13px; font-weight: 700; color: var(--accent); min-width: 44px; }
+.deploy-theme-name { font-size: 11px; color: var(--text-3); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.deploy-amount { font-family: var(--text-mono); font-size: 13px; font-weight: 600; color: var(--text); white-space: nowrap; }
+
+.copy-btn {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  width: calc(100% - 20px); margin: 4px 10px 12px; padding: 14px;
+  background: var(--accent); color: #000; border: none; border-radius: var(--radius);
+  font-size: 15px; font-weight: 600; cursor: pointer;
+  transition: opacity 150ms, transform 150ms var(--spring); -webkit-tap-highlight-color: transparent;
+}
+.copy-btn:active { opacity: 0.85; transform: scale(0.98); }
+.copy-btn svg { width: 18px; height: 18px; stroke-width: 2; }
+.copy-btn.copied { background: var(--up); }
+
+.steps-card {
+  margin: 0 10px 12px; background: var(--bg-card);
+  border: 1px solid var(--border); border-radius: var(--radius); padding: 14px;
+}
+.steps-title { font-size: 13px; font-weight: 600; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 12px; }
+.step-item { display: flex; gap: 12px; margin-bottom: 12px; }
+.step-item:last-child { margin-bottom: 0; }
+.step-num { width: 22px; height: 22px; border-radius: 50%; background: var(--accent-soft); border: 1px solid var(--accent); color: var(--accent); font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.step-text { font-size: 13px; color: var(--text-2); line-height: 1.5; padding-top: 2px; }
+.step-text strong { color: var(--text); }
+
+/* ─── History screen ─── */
+.history-chart { margin: 0 10px 12px; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; }
+.chart-title { font-size: 13px; font-weight: 600; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; }
+.chart-legend { display: flex; gap: 12px; }
+.legend-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-3); }
+.legend-dot { width: 6px; height: 6px; border-radius: 50%; }
+.kill-status-table { margin: 0 10px 12px; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+.ks-row { display: grid; grid-template-columns: 1fr auto auto auto; padding: 10px 14px; border-bottom: 1px solid var(--border); gap: 8px; align-items: center; }
+.ks-row:last-child { border-bottom: none; }
+.ks-row.header { font-size: 10px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: var(--text-3); background: var(--bg-lift); }
+.ks-name { font-size: 13px; color: var(--text-2); }
+.ks-val { font-family: var(--text-mono); font-size: 12px; font-variant-numeric: tabular-nums; color: var(--text); text-align: right; }
+.ks-status { font-size: 11px; font-weight: 600; padding: 2px 7px; border-radius: var(--radius-pill); }
+.ks-status.ok { background: var(--up-bg); color: var(--up); }
+.ks-status.warn { background: var(--warn-bg); color: var(--warn); }
+
+/* ─── Utility ─── */
+.divider { height: 1px; background: var(--border); margin: 0 10px 12px; }
+.loading-placeholder { padding: 40px 16px; text-align: center; color: var(--text-3); font-size: 14px; }
+
+/* ─── Footer ─── */
+.site-footer {
+  text-align: center; padding: 10px 16px 4px;
+  font-size: 10px; color: var(--text-3); letter-spacing: 0.04em;
+  border-top: 1px solid var(--border); background: var(--bg-card);
+  flex-shrink: 0;
+}
+.site-footer a { color: var(--accent-dim); text-decoration: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ── Status bar ── -->
+  <div class="status-bar" id="statusBar">
+    <div class="status-dot" id="statusDot"></div>
+    <div class="status-text" id="statusText">Loading data…</div>
+    <button class="refresh-btn" id="refreshBtn" onclick="manualRefresh()" title="Re-fetch data/state.json">↻ Refresh</button>
+  </div>
+
+  <!-- ── Error banner (shown if fetch fails) ── -->
+  <div class="error-banner hidden" id="errorBanner">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
+    Live data unavailable — showing last known snapshot.
+  </div>
+
+  <!-- ── Kill banner ── -->
+  <div class="kill-banner hidden" id="killBanner">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 00-3.42 0z"/></svg>
+    Kill switch active — tilts paused, equal-weight DCA in effect.
+  </div>
+
+  <div class="screens">
+
+    <!-- ── Screen 1: Memo ── -->
+    <div class="screen active" id="screen-memo">
+      <div class="page-header">
+        <div class="label" id="memoWeekLabel">Loading…</div>
+        <h1>Iggavestment</h1>
+      </div>
+      <div class="stats-row">
+        <div class="stat-card"><div class="stat-label">Contributed YTD</div><div class="stat-value" id="stat-ytd">—</div></div>
+        <div class="stat-card"><div class="stat-label">Total Value</div><div class="stat-value" id="stat-value">—</div></div>
+        <div class="stat-card"><div class="stat-label">vs SPY YTD</div><div class="stat-value" id="stat-spy">—</div></div>
+        <div class="stat-card"><div class="stat-label">Tilt α YTD</div><div class="stat-value" id="stat-alpha">—</div></div>
+      </div>
+      <div class="section-label" id="memoSectionLabel">Loading themes…</div>
+      <div id="themeCards"><div class="loading-placeholder">Fetching latest data…</div></div>
+    </div>
+
+    <!-- ── Screen 2: Deploy ── -->
+    <div class="screen" id="screen-deploy">
+      <div class="deploy-header">
+        <div class="week-label" id="deployDateLabel">—</div>
+        <h2>This Week's Deployment</h2>
+        <div class="total-line" id="deployTotalLine">—</div>
+      </div>
+      <div class="deploy-cols" id="deployCols"><div class="loading-placeholder">Loading…</div></div>
+      <button class="copy-btn" id="copyBtn" onclick="copyDCA()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+        Copy DCA Instructions
+      </button>
+      <div class="steps-card">
+        <div class="steps-title">Fidelity Walkthrough</div>
+        <div class="step-item"><div class="step-num">1</div><div class="step-text">Open <strong>Fidelity.com</strong> → Accounts → <strong>Roth IRA</strong></div></div>
+        <div class="step-item"><div class="step-num">2</div><div class="step-text">Transact → Recurring Investments → <strong>Edit</strong> each ticker amount to match the Roth column above</div></div>
+        <div class="step-item"><div class="step-num">3</div><div class="step-text">Switch to <strong>Individual (Taxable)</strong> account → repeat for Taxable column</div></div>
+        <div class="step-item"><div class="step-num">4</div><div class="step-text">Confirm ACH of <strong>$250 on Monday</strong>. Changes apply next market open.</div></div>
+      </div>
+    </div>
+
+    <!-- ── Screen 3: History ── -->
+    <div class="screen" id="screen-history">
+      <div class="page-header"><div class="label">Kill Switches &amp; Status</div><h1>Health</h1></div>
+      <div class="kill-status-table" id="killStatusTable">
+        <div class="ks-row header"><div>Kill Switch</div><div>Threshold</div><div>Current</div><div>Status</div></div>
+        <div class="ks-row"><div class="ks-name">Max drawdown 12mo</div><div class="ks-val">&gt;25%</div><div class="ks-val" id="ks-drawdown">—</div><div class="ks-status ok" id="ks-drawdown-status">OK</div></div>
+        <div class="ks-row"><div class="ks-name">Tilt hit-rate 24mo</div><div class="ks-val">&lt;48%</div><div class="ks-val" id="ks-hitrate">—</div><div class="ks-status ok" id="ks-hitrate-status">OK</div></div>
+        <div class="ks-row"><div class="ks-name">LLM-tilt cum. α</div><div class="ks-val">&lt;−4%</div><div class="ks-val" id="ks-alpha">—</div><div class="ks-status ok" id="ks-alpha-status">OK</div></div>
+      </div>
+      <div class="history-chart">
+        <div class="chart-title">
+          Conviction Sparklines (all themes)
+          <div class="chart-legend">
+            <div class="legend-item"><div class="legend-dot" style="background:var(--accent)"></div>14 periods</div>
+          </div>
+        </div>
+        <div id="sparklineGrid"></div>
+      </div>
+      <div class="kill-status-table" style="margin-top:8px">
+        <div class="ks-row header"><div>Feed</div><div colspan="3">Status</div></div>
+        <div id="feedStatusRows"><div class="ks-row"><div class="ks-name" colspan="4" style="color:var(--text-3);font-size:12px">Loading…</div></div></div>
+      </div>
+    </div>
+
+  </div><!-- /screens -->
+
+  <nav class="nav">
+    <button class="nav-item active" onclick="showScreen('memo',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+      Conviction
+    </button>
+    <button class="nav-item" onclick="showScreen('deploy',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+      Deploy
+    </button>
+    <button class="nav-item" onclick="showScreen('history',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+      Health
+    </button>
+  </nav>
+
+  <footer class="site-footer">
+    v1.0.0 · Iggavestment · <a href="https://github.com/xavierdjones/iggavestment" target="_blank" rel="noopener">GitHub</a>
+  </footer>
+
+</div><!-- /app -->
+
+<script>
+// ─── Fallback data (shown if fetch fails) ──────────────────────────────────────
+
+const FALLBACK_STATE = {
+  version: "1.0.0",
+  generated_at: new Date().toISOString(),
+  next_refresh_at: new Date(Date.now() + 6 * 3600000).toISOString(),
+  stale: true,
+  stale_feeds: [],
+  degraded: true,
+  themes: [
+    { id: "bio",        name: "Biotech (XBI)",          conviction: 50, tilt_pct: 0,   weekly_dollars: 40.00, account: "Roth",    core_tickers: ["XBI"],            bench_tickers: ["IBB","LLY"],       watch_tickers: ["ARKG"],   sparkline: [50,50,50,50,50,50,50,50,50,50,50,50,50,50], why: "Fallback — live data unavailable.", thesis_state: "intact", kill_flags_triggered: [], top_events: [] },
+    { id: "tech_ai",    name: "Tech/AI Semis (SMH)",    conviction: 50, tilt_pct: 0,   weekly_dollars: 40.00, account: "Roth",    core_tickers: ["SMH"],            bench_tickers: ["SOXX","AVGO"],    watch_tickers: ["ASML"],   sparkline: [50,50,50,50,50,50,50,50,50,50,50,50,50,50], why: "Fallback — live data unavailable.", thesis_state: "intact", kill_flags_triggered: [], top_events: [] },
+    { id: "robotics",   name: "Robotics (ISRG+ABB)",   conviction: 50, tilt_pct: 0,   weekly_dollars: 25.00, account: "Roth",    core_tickers: ["ISRG","ABB"],     bench_tickers: ["SYM","KTOS"],     watch_tickers: ["TSLA"],   sparkline: [50,50,50,50,50,50,50,50,50,50,50,50,50,50], why: "Fallback — live data unavailable.", thesis_state: "intact", kill_flags_triggered: [], top_events: [] },
+    { id: "energy",     name: "Energy/Nuclear/LNG",    conviction: 50, tilt_pct: 0,   weekly_dollars: 30.00, account: "Roth",    core_tickers: ["URA","VST","LNG"], bench_tickers: ["URNM","CEG"],     watch_tickers: ["TLN"],    sparkline: [50,50,50,50,50,50,50,50,50,50,50,50,50,50], why: "Fallback — live data unavailable.", thesis_state: "intact", kill_flags_triggered: [], top_events: [] },
+    { id: "space",      name: "Space (RKLB/ASTS)",     conviction: 50, tilt_pct: 0,   weekly_dollars: 30.00, account: "Taxable", core_tickers: ["RKLB","ASTS"],    bench_tickers: ["PL","LUNR"],      watch_tickers: ["UFO"],    sparkline: [50,50,50,50,50,50,50,50,50,50,50,50,50,50], why: "Fallback — live data unavailable.", thesis_state: "intact", kill_flags_triggered: [], top_events: [] },
+    { id: "rare_earth", name: "Rare Earth (MP/LYC)",   conviction: 50, tilt_pct: 0,   weekly_dollars: 25.00, account: "Taxable", core_tickers: ["MP","LYSCF","USAR"], bench_tickers: ["UUUU"],       watch_tickers: [],         sparkline: [50,50,50,50,50,50,50,50,50,50,50,50,50,50], why: "Fallback — live data unavailable.", thesis_state: "intact", kill_flags_triggered: [], top_events: [] },
+    { id: "food_ag",    name: "Food/Ag (NTR/CTVA)",    conviction: 50, tilt_pct: 0,   weekly_dollars: 20.00, account: "Taxable", core_tickers: ["NTR","CTVA","DBA"], bench_tickers: ["MOS","CF"],    watch_tickers: ["IPI"],    sparkline: [50,50,50,50,50,50,50,50,50,50,50,50,50,50], why: "Fallback — live data unavailable.", thesis_state: "intact", kill_flags_triggered: [], top_events: [] },
+  ],
+  deploy: { roth_total: 135, taxable_total: 75, roth_breakdown: [], taxable_breakdown: [], leap_progress: { current: 0, target: 2500, candidate: "MSFT" } },
+  kill_switches: { max_drawdown_pct: 0, rolling_hit_rate: 0, alpha_drawdown_pct: 0, triggered: false, warnings: [] },
+  metrics: { total_contributed_ytd: 0, total_value: 0, vs_spy_ytd_pct: 0, vs_equal_weight_pct: 0, tilt_alpha_ytd_pct: 0 },
+};
+
+// ─── State ────────────────────────────────────────────────────────────────────
+
+let DATA = null;
+let usingFallback = false;
+
+// ─── Data fetch ───────────────────────────────────────────────────────────────
+
+async function loadData(forceRefresh = false) {
+  const url = '/data/state.json?t=' + Date.now();
+  try {
+    const resp = await fetch(url, { cache: 'no-store' });
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    DATA = await resp.json();
+    usingFallback = false;
+    document.getElementById('errorBanner').classList.add('hidden');
+  } catch (e) {
+    console.warn('Failed to fetch state.json, using fallback:', e);
+    if (!DATA) {
+      DATA = FALLBACK_STATE;
+      usingFallback = true;
+    }
+    document.getElementById('errorBanner').classList.remove('hidden');
+  }
+  renderAll();
+}
+
+function manualRefresh() {
+  const btn = document.getElementById('refreshBtn');
+  btn.classList.add('spinning');
+  loadData(true).finally(() => btn.classList.remove('spinning'));
+}
+
+// ─── Navigation ───────────────────────────────────────────────────────────────
+
+function showScreen(id, btn) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const target = document.getElementById('screen-' + id);
+  if (target) target.classList.add('active');
+  if (btn) btn.classList.add('active');
+}
+
+// ─── Status bar ───────────────────────────────────────────────────────────────
+
+function renderStatusBar() {
+  if (!DATA) return;
+  const dot  = document.getElementById('statusDot');
+  const text = document.getElementById('statusText');
+  const genAt = new Date(DATA.generated_at);
+  const now   = new Date();
+  const ageHours = (now - genAt) / 3600000;
+  const nextAt   = new Date(DATA.next_refresh_at);
+
+  dot.className = 'status-dot ' + (ageHours < 12 ? 'green' : ageHours < 24 ? 'yellow' : 'red');
+
+  const genStr  = genAt.toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', timeZoneName: 'short' });
+  const nextStr = nextAt.toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', timeZoneName: 'short' });
+
+  text.textContent = `Updated ${genStr} · Next ~${nextStr}${DATA.stale ? ' · ⚠ stale feeds' : ''}`;
+}
+
+// ─── Kill banner ──────────────────────────────────────────────────────────────
+
+function renderKillBanner() {
+  if (!DATA) return;
+  const el = document.getElementById('killBanner');
+  if (DATA.kill_switches && DATA.kill_switches.triggered) {
+    el.classList.remove('hidden');
+  } else {
+    el.classList.add('hidden');
+  }
+}
+
+// ─── Helpers ─────────────────────────────────────────────────────────────────
+
+function fmtMoney(v) { return '$' + (v || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+function fmtPct(v) {
+  const n = parseFloat(v) || 0;
+  return (n >= 0 ? '+' : '') + n.toFixed(2) + '%';
+}
+
+function buildSparkline(data) {
+  const w = 80, h = 32, pad = 2;
+  const mn = Math.min(...data), mx = Math.max(...data);
+  const range = mx - mn || 1;
+  const pts = data.map((v, i) => {
+    const x = pad + (i / (data.length - 1)) * (w - 2*pad);
+    const y = h - pad - ((v - mn) / range) * (h - 2*pad);
+    return [x, y];
+  });
+  const pline = pts.map(p => p.join(',')).join(' ');
+  const last = pts[pts.length-1];
+  const areaClose = `L${last[0]},${h} L${pts[0][0]},${h} Z`;
+  const areaPath = `M${pts.map(p=>p.join(',')).join('L')} ${areaClose}`;
+  return `<svg class="sparkline" viewBox="0 0 ${w} ${h}">
+  <path class="spark-area" d="${areaPath}"/>
+  <polyline class="spark-line" points="${pline}"/>
+</svg>`;
+}
+
+function tiltChipClass(tilt_pct) {
+  if (tilt_pct > 0) return 'up';
+  if (tilt_pct < 0) return 'dn';
+  return 'flat';
+}
+
+function tiltChipLabel(tilt_pct) {
+  if (tilt_pct === 0) return '0';
+  return (tilt_pct > 0 ? '+' : '') + tilt_pct.toFixed(1) + '%';
+}
+
+// ─── Theme cards ──────────────────────────────────────────────────────────────
+
+function buildThemeCard(t) {
+  const tiltCls = tiltChipClass(t.tilt_pct);
+  const tiltLbl = tiltChipLabel(t.tilt_pct);
+
+  const coreChips = t.core_tickers.map(tk => `<span class="ticker-chip">${tk}</span>`).join('');
+
+  let eventsHTML = '';
+  if (t.top_events && t.top_events.length) {
+    eventsHTML = t.top_events.slice(0,5).map(e => {
+      const dotCls = e.direction > 0 ? 'up' : e.direction < 0 ? 'dn' : '';
+      return `<div class="event-item">
+        <div class="event-dot ${dotCls}"></div>
+        <div>
+          <div class="event-text">${e.title || e.rationale || ''}</div>
+          ${e.url ? `<a class="event-link" href="${e.url}" target="_blank" rel="noopener">${e.url.replace('https://','').split('/')[0]}</a>` : ''}
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  let killFlagsHTML = '';
+  if (t.kill_flags_triggered && t.kill_flags_triggered.length) {
+    killFlagsHTML = `<div style="margin-bottom:8px">${t.kill_flags_triggered.map(f => `<span class="kill-flag-chip">⚠ ${f}</span>`).join('')}</div>`;
+  }
+
+  let benchHTML = '';
+  if (t.bench_tickers && t.bench_tickers.length) {
+    benchHTML = `<div class="bench-section">
+      <div class="bench-section-title">Bench</div>
+      <div class="bench-ticker-row">${t.bench_tickers.map(tk => `<span class="ticker-chip bench">${tk}</span>`).join('')}</div>
+    </div>`;
+  }
+  let watchHTML = '';
+  if (t.watch_tickers && t.watch_tickers.length) {
+    watchHTML = `<div class="bench-section">
+      <div class="bench-section-title">Watch</div>
+      <div class="bench-ticker-row">${t.watch_tickers.map(tk => `<span class="ticker-chip watch">${tk}</span>`).join('')}</div>
+    </div>`;
+  }
+
+  return `
+<div class="theme-card" id="card-${t.id}">
+  <div class="theme-main" onclick="toggleCard('${t.id}')">
+    <div style="grid-column:1">
+      <div class="theme-top">
+        <div class="theme-name">${t.name}</div>
+        <div class="theme-conviction">${t.conviction}</div>
+      </div>
+      <div class="theme-mid">
+        <span class="tilt-chip ${tiltCls}">${tiltLbl}</span>
+        <span class="theme-alloc">${fmtMoney(t.weekly_dollars)}/wk</span>
+        <span class="theme-account-chip">${t.account}</span>
+      </div>
+      <div class="theme-why">${t.why || ''}</div>
+      <div class="tickers-row">${coreChips}</div>
+    </div>
+    <div class="theme-spark-col">
+      ${buildSparkline(t.sparkline && t.sparkline.length ? t.sparkline : Array(14).fill(50))}
+      <svg class="expand-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+      </svg>
+    </div>
+  </div>
+  <div class="theme-events" id="events-${t.id}">
+    <div class="events-inner">
+      ${killFlagsHTML}
+      ${eventsHTML || '<div style="font-size:12px;color:var(--text-3)">No recent events scored.</div>'}
+      ${benchHTML}
+      ${watchHTML}
+    </div>
+  </div>
+</div>`;
+}
+
+function renderThemeCards() {
+  if (!DATA) return;
+  const container = document.getElementById('themeCards');
+  const lbl = document.getElementById('memoSectionLabel');
+  const weekLbl = document.getElementById('memoWeekLabel');
+
+  container.innerHTML = DATA.themes.map(t => buildThemeCard(t)).join('');
+  if (lbl) lbl.textContent = `${DATA.themes.length} Themes${DATA.degraded ? ' · Degraded' : ''}`;
+
+  const genAt = new Date(DATA.generated_at);
+  if (weekLbl) weekLbl.textContent = genAt.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+}
+
+function toggleCard(id) {
+  const card = document.getElementById('card-' + id);
+  if (card) card.classList.toggle('expanded');
+}
+
+// ─── Stats ────────────────────────────────────────────────────────────────────
+
+function renderStats() {
+  if (!DATA) return;
+  const m = DATA.metrics || {};
+  const ytd = document.getElementById('stat-ytd');
+  const val = document.getElementById('stat-value');
+  const spy = document.getElementById('stat-spy');
+  const alp = document.getElementById('stat-alpha');
+
+  if (ytd) ytd.textContent = m.total_contributed_ytd > 0 ? fmtMoney(m.total_contributed_ytd) : '—';
+  if (val) val.textContent = m.total_value > 0 ? fmtMoney(m.total_value) : '—';
+  if (spy) {
+    spy.textContent = m.vs_spy_ytd_pct ? fmtPct(m.vs_spy_ytd_pct) : '—';
+    spy.className = 'stat-value ' + (m.vs_spy_ytd_pct > 0 ? 'pos' : m.vs_spy_ytd_pct < 0 ? 'neg' : '');
+  }
+  if (alp) {
+    alp.textContent = m.tilt_alpha_ytd_pct ? fmtPct(m.tilt_alpha_ytd_pct) : '—';
+    alp.className = 'stat-value ' + (m.tilt_alpha_ytd_pct > 0 ? 'pos' : m.tilt_alpha_ytd_pct < 0 ? 'neg' : '');
+  }
+}
+
+// ─── Deploy screen ────────────────────────────────────────────────────────────
+
+function renderDeployScreen() {
+  if (!DATA || !DATA.deploy) return;
+  const d = DATA.deploy;
+  const dateLbl = document.getElementById('deployDateLabel');
+  const totalLine = document.getElementById('deployTotalLine');
+  const cols = document.getElementById('deployCols');
+
+  const genAt = new Date(DATA.generated_at);
+  if (dateLbl) dateLbl.textContent = genAt.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+  if (totalLine) totalLine.textContent = `${fmtMoney(d.roth_total + d.taxable_total)} total — ${fmtMoney(d.roth_total)} Roth · ${fmtMoney(d.taxable_total)} Taxable`;
+
+  function lineHTML(l) {
+    const tickers = Array.isArray(l.tickers) ? l.tickers.join('+') : (l.ticker || '');
+    return `<div class="deploy-line">
+      <div class="deploy-ticker">${tickers}</div>
+      <div class="deploy-theme-name">${l.theme || ''}</div>
+      <div class="deploy-amount">${fmtMoney(l.amount)}</div>
+    </div>`;
+  }
+
+  const rothLines    = (d.roth_breakdown    || DATA.themes.filter(t => t.account === 'Roth').map(t => ({ tickers: t.core_tickers, theme: t.name, amount: t.weekly_dollars })));
+  const taxableLines = (d.taxable_breakdown || DATA.themes.filter(t => t.account === 'Taxable').map(t => ({ tickers: t.core_tickers, theme: t.name, amount: t.weekly_dollars })));
+
+  if (cols) cols.innerHTML = `
+    <div class="deploy-col">
+      <div class="deploy-col-header">
+        <div class="deploy-col-name roth">Roth IRA</div>
+        <div class="deploy-col-total">${fmtMoney(d.roth_total)}</div>
+      </div>
+      ${rothLines.map(lineHTML).join('')}
+    </div>
+    <div class="deploy-col">
+      <div class="deploy-col-header">
+        <div class="deploy-col-name taxable">Taxable</div>
+        <div class="deploy-col-total">${fmtMoney(d.taxable_total)}</div>
+      </div>
+      ${taxableLines.map(lineHTML).join('')}
+    </div>`;
+}
+
+// ─── Health / History screen ──────────────────────────────────────────────────
+
+function renderHealthScreen() {
+  if (!DATA) return;
+  const ks = DATA.kill_switches || {};
+
+  const drawdownEl = document.getElementById('ks-drawdown');
+  const hitrateEl  = document.getElementById('ks-hitrate');
+  const alphaEl    = document.getElementById('ks-alpha');
+  const drawdownSt = document.getElementById('ks-drawdown-status');
+  const hitrateSt  = document.getElementById('ks-hitrate-status');
+  const alphaSt    = document.getElementById('ks-alpha-status');
+
+  if (drawdownEl) drawdownEl.textContent = ks.max_drawdown_pct != null ? ks.max_drawdown_pct.toFixed(1) + '%' : '—';
+  if (hitrateEl)  hitrateEl.textContent  = ks.rolling_hit_rate != null ? (ks.rolling_hit_rate * 100).toFixed(0) + '%' : '—';
+  if (alphaEl)    alphaEl.textContent    = ks.alpha_drawdown_pct != null ? ks.alpha_drawdown_pct.toFixed(2) + '%' : '—';
+
+  if (drawdownSt) { drawdownSt.textContent = ks.triggered ? 'WARN' : 'OK'; drawdownSt.className = 'ks-status ' + (ks.triggered ? 'warn' : 'ok'); }
+  if (hitrateSt)  { hitrateSt.textContent  = 'OK'; hitrateSt.className  = 'ks-status ok'; }
+  if (alphaSt)    { alphaSt.textContent    = 'OK'; alphaSt.className    = 'ks-status ok'; }
+
+  // Sparkline grid
+  const grid = document.getElementById('sparklineGrid');
+  if (grid) {
+    grid.innerHTML = DATA.themes.map(t => `
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+        <div style="font-size:11px;color:var(--text-3);width:110px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${t.name.split(' ')[0]}</div>
+        ${buildSparkline(t.sparkline && t.sparkline.length ? t.sparkline : Array(14).fill(50))}
+        <div style="font-family:var(--text-mono);font-size:12px;color:var(--text);min-width:28px;text-align:right">${t.conviction}</div>
+      </div>`
+    ).join('');
+  }
+
+  // Feed status
+  const feedRows = document.getElementById('feedStatusRows');
+  if (feedRows) {
+    const stale = DATA.stale_feeds || [];
+    if (stale.length === 0) {
+      feedRows.innerHTML = `<div class="ks-row"><div class="ks-name" style="color:var(--up)">All feeds healthy</div><div></div><div></div><div class="ks-status ok">OK</div></div>`;
+    } else {
+      feedRows.innerHTML = stale.map(f => `<div class="ks-row"><div class="ks-name">${f}</div><div></div><div></div><div class="ks-status warn">STALE</div></div>`).join('');
+    }
+  }
+}
+
+// ─── Copy DCA ─────────────────────────────────────────────────────────────────
+
+function copyDCA() {
+  if (!DATA || !DATA.deploy) return;
+  const d = DATA.deploy;
+  const lines = [];
+  const genAt = new Date(DATA.generated_at).toLocaleDateString('en-US');
+  lines.push(`Iggavestment DCA — ${genAt}`);
+  lines.push('');
+  lines.push('ROTH IRA:');
+  (d.roth_breakdown || []).forEach(l => {
+    const tickers = Array.isArray(l.tickers) ? l.tickers.join('+') : l.ticker || '';
+    lines.push(`  ${tickers} (${l.theme}): $${(l.amount || 0).toFixed(2)}`);
+  });
+  lines.push(`  Total: $${(d.roth_total || 0).toFixed(2)}`);
+  lines.push('');
+  lines.push('TAXABLE:');
+  (d.taxable_breakdown || []).forEach(l => {
+    const tickers = Array.isArray(l.tickers) ? l.tickers.join('+') : l.ticker || '';
+    lines.push(`  ${tickers} (${l.theme}): $${(l.amount || 0).toFixed(2)}`);
+  });
+  lines.push(`  Total: $${(d.taxable_total || 0).toFixed(2)}`);
+  lines.push('');
+  lines.push(`Grand total: $${((d.roth_total || 0) + (d.taxable_total || 0)).toFixed(2)}`);
+
+  navigator.clipboard.writeText(lines.join('\n')).then(() => {
+    const btn = document.getElementById('copyBtn');
+    if (btn) { btn.classList.add('copied'); btn.textContent = 'Copied!'; setTimeout(() => { btn.classList.remove('copied'); btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>Copy DCA Instructions'; }, 2000); }
+  }).catch(() => {});
+}
+
+// ─── Render all ───────────────────────────────────────────────────────────────
+
+function renderAll() {
+  renderStatusBar();
+  renderKillBanner();
+  renderStats();
+  renderThemeCards();
+  renderDeployScreen();
+  renderHealthScreen();
+}
+
+// ─── Boot ─────────────────────────────────────────────────────────────────────
+
+loadData();
+</script>
+
+</body>
+</html>
