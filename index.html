@@ -1,1013 +1,938 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="color-scheme" content="dark">
-<title>Iggavestment</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>Your Plan</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..700;1,6..72,300..600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-/* ─── Reset & tokens ─── */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-:root {
-  --bg:          #0e0e10;
-  --bg-card:     #18181b;
-  --bg-lift:     #1f1f24;
-  --bg-lift2:    #27272c;
-  --border:      rgba(255,255,255,0.07);
-  --border-mid:  rgba(255,255,255,0.12);
-
-  --accent:      oklch(0.72 0.22 195);
-  --accent-dim:  oklch(0.55 0.18 195);
-  --accent-soft: oklch(0.72 0.22 195 / 0.12);
-  --accent-glow: oklch(0.72 0.22 195 / 0.25);
-
-  --up:    oklch(0.72 0.18 145);
-  --up-bg: oklch(0.72 0.18 145 / 0.12);
-  --dn:    oklch(0.65 0.20 25);
-  --dn-bg: oklch(0.65 0.20 25 / 0.12);
-  --flat:  oklch(0.62 0.00 0);
-  --flat-bg: rgba(255,255,255,0.06);
-
-  --warn:    oklch(0.72 0.20 70);
-  --warn-bg: oklch(0.72 0.20 70 / 0.12);
-
-  --text:     #f4f4f5;
-  --text-2:   #a1a1aa;
-  --text-3:   #71717a;
-  --text-mono: 'ui-monospace', 'SFMono-Regular', 'Cascadia Code', monospace;
-
-  --radius:   12px;
-  --radius-sm: 6px;
-  --radius-pill: 100px;
-
-  --nav-h: 56px;
-  --safe-b: env(safe-area-inset-bottom, 0px);
-
-  --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
-  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+:root{
+  --paper: oklch(0.972 0.006 75);
+  --paper-edge: oklch(0.945 0.008 75);
+  --ink: oklch(0.22 0.02 50);
+  --ink-soft: oklch(0.42 0.018 50);
+  --ink-faint: oklch(0.62 0.012 50);
+  --rule: oklch(0.86 0.012 60);
+  --rule-soft: oklch(0.92 0.008 60);
+  --accent: oklch(0.42 0.105 32);
+  --accent-soft: oklch(0.42 0.105 32 / 0.08);
+  --max: 38rem;
+  --gutter: clamp(1.25rem, 3.5vw, 2rem);
+  --serif: "Newsreader", "Iowan Old Style", "Source Serif Pro", Georgia, serif;
+  --sans: "Inter", -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
 }
-
-html, body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
-  font-size: 16px;
-  line-height: 1.5;
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--serif);
+  font-optical-sizing: auto;
+  font-size: 18px;
+  line-height: 1.62;
+  text-wrap: pretty;
   -webkit-font-smoothing: antialiased;
-  overscroll-behavior: none;
-  height: 100%;
-  overflow: hidden;
+  -moz-osx-font-smoothing: grayscale;
 }
-
-.app {
+main{
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: clamp(2.25rem, 6vw, 4.5rem) var(--gutter) 6rem;
+}
+header.doc{
+  border-bottom: 1px solid var(--rule);
+  padding-bottom: 2.25rem;
+  margin-bottom: 3rem;
+}
+.eyebrow{
+  font-family: var(--sans);
+  font-size: 0.74rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent);
+  font-weight: 500;
+  margin: 0 0 1.5rem;
+}
+h1{
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: clamp(2.6rem, 6vw, 3.6rem);
+  line-height: 1.05;
+  margin: 0 0 0.85rem;
+  letter-spacing: -0.012em;
+  text-wrap: balance;
+}
+.dek{
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 300;
+  color: var(--ink-soft);
+  font-size: 1.2rem;
+  line-height: 1.45;
+  margin: 0 0 1.75rem;
+  text-wrap: balance;
+}
+.meta{
+  font-family: var(--sans);
+  font-size: 0.82rem;
+  color: var(--ink-faint);
+  letter-spacing: 0.01em;
+  margin: 0;
+}
+section.s{
+  margin: 4.5rem 0 0;
+  scroll-margin-top: 2rem;
+}
+section.s > h2{
+  font-family: var(--serif);
+  font-weight: 500;
+  font-size: 1.6rem;
+  letter-spacing: -0.008em;
+  margin: 0 0 0.4rem;
+  line-height: 1.2;
+}
+section.s > .lede{
+  font-family: var(--serif);
+  font-style: italic;
+  color: var(--ink-soft);
+  margin: 0 0 1.75rem;
+  font-size: 1.02rem;
+  line-height: 1.55;
+}
+p{margin: 0 0 1.1rem}
+strong{font-weight: 600; color: var(--ink)}
+em{font-style: italic}
+a{color: var(--accent); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 2px}
+hr.divider{
+  border: 0;
+  border-top: 1px solid var(--rule);
+  margin: 4rem 0 0;
+}
+.snapshot{
+  border: 1px solid var(--rule);
+  background: oklch(0.985 0.004 75);
+  padding: 1.6rem 1.75rem;
+  margin: 0 0 1.25rem;
+}
+.snapshot dl{
+  margin: 0;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.55rem 1.5rem;
+  font-family: var(--sans);
+}
+.snapshot dt{
+  font-size: 0.88rem;
+  color: var(--ink-soft);
+  font-weight: 400;
+}
+.snapshot dd{
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+  text-align: right;
+}
+.read{
+  font-family: var(--serif);
+  font-style: italic;
+  color: var(--ink-soft);
+  font-size: 1.02rem;
+  border-left: 2px solid var(--accent);
+  padding-left: 1.1rem;
+  margin: 1.4rem 0 0;
+  line-height: 1.5;
+}
+.chart{
+  margin: 1.75rem 0 1.25rem;
+  display: block;
+  width: 100%;
+  height: auto;
+}
+table.paths{
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--sans);
+  font-size: 0.92rem;
+  margin: 1rem 0 1rem;
+}
+table.paths th, table.paths td{
+  padding: 0.7rem 0.6rem;
+  text-align: right;
+  border-bottom: 1px solid var(--rule-soft);
+  font-variant-numeric: tabular-nums;
+}
+table.paths th{
+  font-weight: 500;
+  color: var(--ink-soft);
+  font-size: 0.78rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--rule);
+}
+table.paths td:first-child, table.paths th:first-child{
+  text-align: left;
+  font-weight: 500;
+  color: var(--ink);
+}
+table.paths tr.a td{color: var(--ink-faint)}
+table.paths tr.c td{color: var(--accent); font-weight: 600}
+.caption{
+  font-family: var(--sans);
+  font-size: 0.82rem;
+  color: var(--ink-faint);
+  line-height: 1.5;
+  margin: 0.75rem 0 0;
+}
+.phase{ margin: 2.5rem 0 0 }
+.phase h3{
+  font-family: var(--serif);
+  font-weight: 500;
+  font-size: 1.18rem;
+  margin: 0 0 0.25rem;
+  letter-spacing: -0.005em;
+}
+.phase .when{
+  font-family: var(--sans);
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 0 0 0.75rem;
+}
+.phase .why{
+  color: var(--ink-soft);
+  font-style: italic;
+  font-size: 1rem;
+  margin: 0 0 1.1rem;
+}
+ol.actions{
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: action;
+}
+ol.actions > li{
+  counter-increment: action;
+  padding: 0.85rem 0 0.85rem 2.4rem;
+  position: relative;
+  border-bottom: 1px solid var(--rule-soft);
+  font-size: 1rem;
+  line-height: 1.55;
+}
+ol.actions > li:last-child{border-bottom: 0}
+ol.actions > li::before{
+  content: counter(action, decimal-leading-zero);
+  position: absolute;
+  left: 0;
+  top: 0.95rem;
+  font-family: var(--sans);
+  font-size: 0.75rem;
+  color: var(--accent);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+}
+ol.actions ul{
+  margin: 0.45rem 0 0;
+  padding: 0 0 0 1.1rem;
+  font-size: 0.96rem;
+  color: var(--ink-soft);
+}
+ol.actions ul li{
+  padding: 0.18rem 0;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+table.holdings{
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--sans);
+  font-size: 0.9rem;
+  margin: 1.25rem 0 0;
+}
+table.holdings th, table.holdings td{
+  padding: 0.6rem 0.55rem;
+  border-bottom: 1px solid var(--rule-soft);
+  text-align: left;
+  vertical-align: top;
+  font-variant-numeric: tabular-nums;
+}
+table.holdings th{
+  font-weight: 500;
+  font-size: 0.74rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  border-bottom: 1px solid var(--rule);
+}
+table.holdings .r{text-align: right; white-space: nowrap}
+table.holdings .t{
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 0.82rem;
+  color: var(--accent);
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+table.holdings tr.total td{
+  border-top: 1px solid var(--rule);
+  border-bottom: 0;
+  font-weight: 600;
+  color: var(--ink);
+  padding-top: 0.85rem;
+  font-style: italic;
+}
+@media (max-width: 540px){
+  table.holdings{font-size: 0.85rem}
+  table.holdings td:nth-child(2){font-size: 0.86rem; line-height: 1.35}
+}
+.tilt-list{
+  margin: 1.25rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+.tilt-list li{
+  display: grid;
+  grid-template-columns: 1.1fr 2fr auto;
+  gap: 0.6rem 1.25rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--rule-soft);
+  align-items: baseline;
+}
+.tilt-list li:last-child{border-bottom: 0}
+.tilt-list .name{
+  font-family: var(--sans);
+  font-weight: 600;
+  color: var(--ink);
+  font-size: 0.95rem;
+}
+.tilt-list .reason{
+  color: var(--ink-soft);
+  font-family: var(--serif);
+  font-size: 0.98rem;
+  font-style: italic;
+  line-height: 1.45;
+}
+.tilt-list .meta{
   display: flex;
   flex-direction: column;
-  height: 100dvh;
-  max-width: 420px;
-  margin: 0 auto;
+  align-items: flex-end;
+  gap: 0.3rem;
+  white-space: nowrap;
+}
+.tilt-list .conv{
+  font-family: var(--sans);
+  font-variant-numeric: tabular-nums;
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--ink);
+  line-height: 1;
+  letter-spacing: -0.01em;
+}
+.tilt-list .conv.up{color: oklch(0.46 0.09 150)}
+.tilt-list .conv.dn{color: oklch(0.52 0.13 28)}
+.tilt-list .conv.neutral{color: var(--ink-faint)}
+.tilt-list .conv .lbl{
+  display: block;
+  font-size: 0.65rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ink-faint);
+  margin-top: 0.18rem;
+}
+.tilt-list .ticker{
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 0.78rem;
+  color: var(--accent);
+  letter-spacing: 0.04em;
+  text-align: right;
+}
+@media (max-width: 600px){
+  .tilt-list li{grid-template-columns: 1fr; gap: 0.25rem}
+  .tilt-list .meta{flex-direction: row; align-items: baseline; gap: 0.9rem; justify-content: flex-start}
+  .tilt-list .ticker{text-align: left}
+}
+#tilt-updated{
+  font-family: var(--sans);
+  font-size: 0.78rem;
+  color: var(--ink-faint);
+  margin-top: 0.9rem;
+  font-variant-numeric: tabular-nums;
+}
+.pledge{
+  border: 1px solid var(--ink);
+  background: oklch(0.985 0.004 75);
+  padding: 2.25rem 2.25rem 2rem;
+  margin: 2rem 0 0;
+}
+.pledge-head{
+  text-align: center;
+  font-family: var(--serif);
+  font-style: italic;
+  letter-spacing: 0.04em;
+  font-size: 0.92rem;
+  color: var(--ink-soft);
+  text-transform: uppercase;
+  margin: 0 0 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--rule);
+}
+.pledge ol{
+  margin: 0 0 1.75rem;
+  padding: 0 0 0 1.25rem;
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 1.04rem;
+  line-height: 1.7;
+  color: var(--ink);
+}
+.pledge ol li{ margin: 0 0 0.45rem }
+.sig{
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 1.5rem;
+  margin: 2rem 0 0;
+  font-family: var(--sans);
+  font-size: 0.82rem;
+  color: var(--ink-soft);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.sig .line{
+  border-bottom: 1px solid var(--ink);
+  padding-bottom: 0.35rem;
+  height: 1.2rem;
+}
+.sig .label{
+  margin-top: 0.4rem;
+  font-size: 0.7rem;
+}
+dl.scenarios{ margin: 1.5rem 0 0; padding: 0 }
+dl.scenarios dt{
+  font-family: var(--sans);
+  font-weight: 600;
+  font-size: 0.93rem;
+  color: var(--accent);
+  margin: 1.25rem 0 0.25rem;
+}
+dl.scenarios dt:first-child{margin-top: 0}
+dl.scenarios dd{
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 1rem;
+  line-height: 1.55;
+}
+ul.dont{
+  margin: 1.25rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+ul.dont li{
+  padding: 0.7rem 0 0.7rem 1.5rem;
   position: relative;
+  border-bottom: 1px solid var(--rule-soft);
+  font-size: 0.98rem;
+  color: var(--ink-soft);
 }
-
-@media (min-width: 860px) {
-  :root { --text: #fafafa; --text-2: #c4c4c8; --text-3: #8a8a91; }
-  html { font-size: 17px; }
-  body { display: flex; align-items: flex-start; justify-content: center; padding: 32px 32px 48px; }
-  .app {
-    height: auto;
-    min-height: calc(100dvh - 80px);
-    max-width: 1180px;
-    width: 100%;
-    border: 1px solid var(--border-mid);
-    border-radius: 20px;
-    overflow: hidden;
-    background: var(--bg);
-  }
-  .screens { min-height: 760px; }
-  .screen { padding-bottom: calc(var(--nav-h) + 24px); padding-left: 8px; padding-right: 8px; }
-  .page-header { padding: 32px 32px 12px; }
-  .page-header h1 { font-size: 34px; }
-  .stats-row { grid-template-columns: repeat(4, 1fr); padding: 12px 32px 24px; gap: 12px; }
-  .stat-card .stat-value { font-size: 22px; }
-  .screen#screen-memo > div:not(.page-header):not(.stats-row):not(.status-bar):not(.kill-banner),
-  .themes-container { padding-left: 32px; padding-right: 32px; }
-  .theme-card { margin-bottom: 0 !important; }
-  .screen#screen-memo, .screen#screen-deploy { display: block; }
-  .screen#screen-memo .theme-card {
-    display: inline-block; width: calc(50% - 8px); vertical-align: top; margin: 4px;
-  }
-  .theme-card { font-size: 15px; }
-  .nav { font-size: 13px; }
-  .nav-item { font-size: 12px; }
-  .nav-item svg { width: 26px; height: 26px; }
+ul.dont li:last-child{border-bottom: 0}
+ul.dont li::before{
+  content: "✕";
+  position: absolute;
+  left: 0;
+  top: 0.85rem;
+  color: var(--accent);
+  font-family: var(--sans);
+  font-size: 0.78rem;
 }
-
-@media (min-width: 1200px) {
-  .screen#screen-memo .theme-card { width: calc(33.333% - 10px); }
+ul.dont strong{color: var(--ink); font-weight: 600}
+table.pros{
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--sans);
+  font-size: 0.92rem;
+  margin: 1.25rem 0 0;
 }
-
-/* ─── Status bar ─── */
-.status-bar {
-  display: flex; align-items: center; gap: 8px;
-  padding: 7px 16px; background: var(--bg-lift);
-  border-bottom: 1px solid var(--border);
-  font-size: 11px; color: var(--text-3);
-  flex-shrink: 0;
+table.pros th, table.pros td{
+  padding: 0.85rem 0.5rem;
+  border-bottom: 1px solid var(--rule-soft);
+  text-align: left;
+  vertical-align: top;
 }
-.status-dot {
-  width: 7px; height: 7px; border-radius: 50%;
-  flex-shrink: 0;
+table.pros th{
+  font-weight: 500;
+  font-size: 0.76rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  border-bottom: 1px solid var(--rule);
 }
-.status-dot.green  { background: var(--up); }
-.status-dot.yellow { background: var(--warn); }
-.status-dot.red    { background: var(--dn); }
-.status-bar .status-text { flex: 1; }
-.refresh-btn {
-  background: var(--bg-lift2); border: 1px solid var(--border-mid);
-  color: var(--text-2); font-size: 11px; font-weight: 600;
-  padding: 3px 8px; border-radius: var(--radius-pill);
-  cursor: pointer; transition: background 150ms, color 150ms;
-  -webkit-tap-highlight-color: transparent;
+table.pros td:nth-child(2), table.pros td:nth-child(3){
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-soft);
+  white-space: nowrap;
 }
-.refresh-btn:hover { background: var(--accent-soft); color: var(--accent); border-color: var(--accent); }
-.refresh-btn.spinning { animation: spin 0.8s linear infinite; }
-@keyframes spin { to { transform: rotate(360deg); } }
-
-/* ─── Error banner ─── */
-.error-banner {
-  background: var(--dn-bg); border-bottom: 1px solid var(--dn);
-  padding: 10px 16px; display: flex; align-items: center; gap: 8px;
-  font-size: 13px; color: var(--dn); font-weight: 500;
+table.pros .sub-row{
+  display: block;
+  font-family: var(--serif);
+  font-style: italic;
+  color: var(--ink-faint);
+  font-size: 0.86rem;
+  margin-top: 0.2rem;
 }
-.error-banner.hidden { display: none; }
-
-/* ─── Kill banner ─── */
-.kill-banner {
-  background: var(--dn-bg); border-bottom: 1px solid var(--dn);
-  padding: 10px 16px; display: flex; align-items: center; gap: 8px;
-  font-size: 13px; color: var(--dn); font-weight: 500;
+@media (max-width: 540px){
+  table.pros th:nth-child(3), table.pros td:nth-child(3){display: none}
 }
-.kill-banner.hidden { display: none; }
-.kill-banner svg, .error-banner svg { flex-shrink: 0; width: 16px; height: 16px; }
-
-/* ─── Screen container ─── */
-.screens { flex: 1; overflow: hidden; position: relative; }
-.screen {
-  position: absolute; inset: 0; overflow-y: auto; overflow-x: hidden;
-  padding-bottom: calc(var(--nav-h) + var(--safe-b) + 16px);
-  opacity: 0; pointer-events: none; transform: translateY(8px);
-  transition: opacity 180ms var(--ease-out), transform 180ms var(--ease-out);
-  -webkit-overflow-scrolling: touch;
+footer.doc{
+  margin-top: 5rem;
+  padding-top: 1.75rem;
+  border-top: 1px solid var(--rule);
+  font-family: var(--sans);
+  font-size: 0.78rem;
+  color: var(--ink-faint);
+  line-height: 1.55;
 }
-.screen.active { opacity: 1; pointer-events: all; transform: none; }
-
-/* ─── Bottom nav ─── */
-.nav {
-  height: calc(var(--nav-h) + var(--safe-b)); padding-bottom: var(--safe-b);
-  background: var(--bg-card); border-top: 1px solid var(--border);
-  display: flex; align-items: center; flex-shrink: 0; position: relative; z-index: 10;
+footer.doc p{margin: 0 0 0.4rem}
+footer.doc .ver{
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  margin-top: 1rem;
 }
-.nav-item {
-  flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px;
-  padding: 8px 0; cursor: pointer; border: none; background: none;
-  color: var(--text-3); font-size: 10px; font-weight: 500; letter-spacing: 0.04em;
-  text-transform: uppercase; transition: color 150ms; -webkit-tap-highlight-color: transparent;
+@media print{
+  body{background: white; font-size: 11pt}
+  main{max-width: none; padding: 0.5in}
+  .pledge{break-inside: avoid; border: 1px solid #333}
+  section.s{break-inside: avoid-page}
+  hr.divider{display: none}
 }
-.nav-item.active { color: var(--accent); }
-.nav-item svg { width: 22px; height: 22px; stroke-width: 1.5; }
-
-/* ─── Page header ─── */
-.page-header { padding: 20px 16px 8px; }
-.page-header .label {
-  font-size: 11px; font-weight: 600; letter-spacing: 0.08em;
-  text-transform: uppercase; color: var(--text-3); margin-bottom: 4px;
-}
-.page-header h1 { font-size: 26px; font-weight: 600; letter-spacing: -0.02em; color: var(--text); }
-
-/* ─── Stats row ─── */
-.stats-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 8px 16px 16px; }
-.stat-card {
-  background: var(--bg-card); border: 1px solid var(--border);
-  border-radius: var(--radius); padding: 12px 14px;
-}
-.stat-card .stat-label {
-  font-size: 10px; font-weight: 600; letter-spacing: 0.07em;
-  text-transform: uppercase; color: var(--text-3); margin-bottom: 4px;
-}
-.stat-card .stat-value {
-  font-family: var(--text-mono); font-size: 18px; font-weight: 600;
-  font-variant-numeric: tabular-nums; color: var(--text); letter-spacing: -0.02em;
-}
-.stat-card .stat-value.pos { color: var(--up); }
-.stat-card .stat-value.neg { color: var(--dn); }
-
-/* ─── Section label ─── */
-.section-label {
-  padding: 4px 16px 10px; font-size: 11px; font-weight: 600;
-  letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-3);
-}
-
-/* ─── Theme card ─── */
-.theme-card {
-  margin: 0 10px 8px; background: var(--bg-card); border: 1px solid var(--border);
-  border-radius: var(--radius); overflow: hidden; transition: border-color 200ms;
-}
-.theme-card.expanded { border-color: var(--border-mid); }
-
-.theme-main {
-  padding: 14px 14px 12px; display: grid;
-  grid-template-columns: 1fr auto; grid-template-rows: auto auto auto;
-  cursor: pointer; -webkit-tap-highlight-color: transparent; user-select: none;
-}
-.theme-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
-.theme-name { font-size: 15px; font-weight: 600; color: var(--text); letter-spacing: -0.01em; }
-.theme-conviction {
-  font-family: var(--text-mono); font-size: 26px; font-weight: 700;
-  font-variant-numeric: tabular-nums; letter-spacing: -0.03em; color: var(--text); line-height: 1;
-}
-.theme-mid { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }
-.tilt-chip {
-  display: inline-flex; align-items: center; padding: 2px 8px;
-  border-radius: var(--radius-pill); font-size: 12px; font-weight: 600;
-  font-family: var(--text-mono); font-variant-numeric: tabular-nums;
-}
-.tilt-chip.up   { background: var(--up-bg); color: var(--up); }
-.tilt-chip.dn   { background: var(--dn-bg); color: var(--dn); }
-.tilt-chip.flat { background: var(--flat-bg); color: var(--flat); }
-.theme-alloc {
-  font-family: var(--text-mono); font-size: 14px; font-weight: 500;
-  color: var(--text); font-variant-numeric: tabular-nums;
-}
-.theme-account-chip {
-  font-size: 11px; font-weight: 600; color: var(--text-3);
-  background: var(--bg-lift); padding: 2px 7px;
-  border-radius: var(--radius-pill); margin-left: auto;
-}
-.theme-why { font-size: 13px; color: var(--text-2); line-height: 1.45; margin-bottom: 8px; }
-.tickers-row { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 4px; }
-.ticker-chip {
-  font-size: 11px; font-weight: 600; font-family: var(--text-mono);
-  color: var(--accent); background: var(--accent-soft);
-  padding: 2px 7px; border-radius: var(--radius-pill); letter-spacing: 0.02em;
-}
-.ticker-chip.bench { color: var(--text-3); background: var(--bg-lift2); border: 1px solid var(--border-mid); }
-.ticker-chip.watch { color: oklch(0.72 0.18 60); background: oklch(0.72 0.18 60 / 0.1); border: 1px dashed oklch(0.72 0.18 60 / 0.4); }
-.ticker-tier-label {
-  font-size: 10px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase;
-  color: var(--text-3); margin-bottom: 4px; margin-top: 8px;
-}
-
-/* sparkline column */
-.theme-spark-col {
-  grid-row: 1 / 4; grid-column: 2; display: flex;
-  flex-direction: column; align-items: flex-end; justify-content: space-between;
-  padding-left: 12px; padding-top: 2px;
-}
-.sparkline { width: 80px; height: 32px; }
-.spark-line { fill: none; stroke: var(--accent); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; opacity: 0.8; }
-.spark-area { fill: var(--accent-soft); }
-.expand-chevron {
-  width: 16px; height: 16px; stroke: var(--text-3); stroke-width: 1.5;
-  transition: transform 200ms var(--spring); flex-shrink: 0;
-}
-.theme-card.expanded .expand-chevron { transform: rotate(180deg); }
-
-/* expanded panel */
-.theme-events {
-  max-height: 0; overflow: hidden;
-  transition: max-height 320ms var(--ease-out);
-  border-top: 0px solid var(--border);
-}
-.theme-card.expanded .theme-events {
-  max-height: 1200px;
-  border-top: 1px solid var(--border);
-}
-.events-inner { padding: 12px 14px; display: flex; flex-direction: column; gap: 10px; }
-.event-item { display: flex; gap: 10px; }
-.event-dot {
-  width: 6px; height: 6px; border-radius: 50%; background: var(--accent);
-  flex-shrink: 0; margin-top: 6px;
-}
-.event-dot.up { background: var(--up); }
-.event-dot.dn { background: var(--dn); }
-.event-text { font-size: 13px; color: var(--text-2); line-height: 1.4; }
-.event-link { font-size: 11px; color: var(--accent-dim); font-weight: 500; display: block; margin-top: 2px; text-decoration: none; }
-.kill-flag-chip {
-  font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: var(--radius-pill);
-  background: var(--dn-bg); color: var(--dn); border: 1px solid oklch(0.65 0.20 25 / 0.3);
-  margin-right: 4px; margin-bottom: 4px; display: inline-block;
-}
-.bench-section { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); }
-.bench-section-title {
-  font-size: 10px; font-weight: 700; letter-spacing: 0.08em;
-  text-transform: uppercase; color: var(--text-3); margin-bottom: 8px;
-}
-.bench-ticker-row { display: flex; flex-wrap: wrap; gap: 6px; }
-
-/* ─── Deploy screen ─── */
-.deploy-header { padding: 20px 16px 6px; }
-.deploy-header .week-label { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-3); margin-bottom: 4px; }
-.deploy-header h2 { font-size: 22px; font-weight: 600; letter-spacing: -0.02em; }
-.deploy-header .total-line { font-family: var(--text-mono); font-size: 13px; color: var(--text-2); margin-top: 4px; }
-.deploy-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 12px 10px; }
-.deploy-col { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
-.deploy-col-header { padding: 10px 12px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
-.deploy-col-name { font-size: 12px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; }
-.deploy-col-name.roth { color: var(--accent); }
-.deploy-col-name.taxable { color: var(--up); }
-.deploy-col-total { font-family: var(--text-mono); font-size: 13px; font-weight: 600; color: var(--text-2); }
-.deploy-line { display: flex; align-items: center; justify-content: space-between; padding: 9px 12px; border-bottom: 1px solid var(--border); gap: 6px; }
-.deploy-line:last-child { border-bottom: none; }
-.deploy-ticker { font-family: var(--text-mono); font-size: 13px; font-weight: 700; color: var(--accent); min-width: 44px; }
-.deploy-theme-name { font-size: 11px; color: var(--text-3); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.deploy-amount { font-family: var(--text-mono); font-size: 13px; font-weight: 600; color: var(--text); white-space: nowrap; }
-
-.copy-btn {
-  display: flex; align-items: center; justify-content: center; gap: 8px;
-  width: calc(100% - 20px); margin: 4px 10px 12px; padding: 14px;
-  background: var(--accent); color: #000; border: none; border-radius: var(--radius);
-  font-size: 15px; font-weight: 600; cursor: pointer;
-  transition: opacity 150ms, transform 150ms var(--spring); -webkit-tap-highlight-color: transparent;
-}
-.copy-btn:active { opacity: 0.85; transform: scale(0.98); }
-.copy-btn svg { width: 18px; height: 18px; stroke-width: 2; }
-.copy-btn.copied { background: var(--up); }
-
-.steps-card {
-  margin: 0 10px 12px; background: var(--bg-card);
-  border: 1px solid var(--border); border-radius: var(--radius); padding: 14px;
-}
-.steps-title { font-size: 13px; font-weight: 600; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 12px; }
-.step-item { display: flex; gap: 12px; margin-bottom: 12px; }
-.step-item:last-child { margin-bottom: 0; }
-.step-num { width: 22px; height: 22px; border-radius: 50%; background: var(--accent-soft); border: 1px solid var(--accent); color: var(--accent); font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.step-text { font-size: 13px; color: var(--text-2); line-height: 1.5; padding-top: 2px; }
-.step-text strong { color: var(--text); }
-
-/* ─── History screen ─── */
-.history-chart { margin: 0 10px 12px; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; }
-.chart-title { font-size: 13px; font-weight: 600; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; }
-.chart-legend { display: flex; gap: 12px; }
-.legend-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-3); }
-.legend-dot { width: 6px; height: 6px; border-radius: 50%; }
-.kill-status-table { margin: 0 10px 12px; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
-.ks-row { display: grid; grid-template-columns: 1fr auto auto auto; padding: 10px 14px; border-bottom: 1px solid var(--border); gap: 8px; align-items: center; }
-.ks-row:last-child { border-bottom: none; }
-.ks-row.header { font-size: 10px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: var(--text-3); background: var(--bg-lift); }
-.ks-name { font-size: 13px; color: var(--text-2); }
-.ks-val { font-family: var(--text-mono); font-size: 12px; font-variant-numeric: tabular-nums; color: var(--text); text-align: right; }
-.ks-status { font-size: 11px; font-weight: 600; padding: 2px 7px; border-radius: var(--radius-pill); }
-.ks-status.ok { background: var(--up-bg); color: var(--up); }
-.ks-status.warn { background: var(--warn-bg); color: var(--warn); }
-
-/* ─── Utility ─── */
-.divider { height: 1px; background: var(--border); margin: 0 10px 12px; }
-.loading-placeholder { padding: 40px 16px; text-align: center; color: var(--text-3); font-size: 14px; }
-
-/* ─── Footer ─── */
-.site-footer {
-  text-align: center; padding: 10px 16px 4px;
-  font-size: 10px; color: var(--text-3); letter-spacing: 0.04em;
-  border-top: 1px solid var(--border); background: var(--bg-card);
-  flex-shrink: 0;
-}
-.site-footer a { color: var(--accent-dim); text-decoration: none; }
-
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+@media (prefers-reduced-motion: reduce){
+  *{animation-duration: 0.01ms !important; transition-duration: 0.01ms !important}
 }
 </style>
 </head>
 <body>
+<main>
 
-<div class="app">
+<header class="doc">
+  <p class="eyebrow">A document for one person</p>
+  <h1>Your Plan</h1>
+  <p class="dek">A fourteen-year roadmap from age fifty-one to age sixty-five. Built around what is actually true about your money, your time, and your life &mdash; not what is comfortable to say.</p>
+  <p class="meta">Last updated 22 May 2026 &nbsp;&middot;&nbsp; This document is yours. Print it, save it, follow it.</p>
+</header>
 
-  <!-- ── Status bar ── -->
-  <div class="status-bar" id="statusBar">
-    <div class="status-dot" id="statusDot"></div>
-    <div class="status-text" id="statusText">Loading data…</div>
-    <button class="refresh-btn" id="refreshBtn" onclick="manualRefresh()" title="Re-fetch data/state.json">↻ Refresh</button>
+<section class="s" id="today">
+  <h2>Where you are today</h2>
+  <p class="lede">The honest opening line, before any plan.</p>
+
+  <div class="snapshot">
+    <dl>
+      <dt>Age</dt><dd>51</dd>
+      <dt>Salary</dt><dd>$119,000</dd>
+      <dt>401(k) balance</dt><dd>$52,000</dd>
+      <dt>Current fund</dt><dd>American Funds 2040 R&#8209;4</dd>
+      <dt>Expense ratio</dt><dd>0.71%</dd>
+      <dt>Annual fee drag</dt><dd>&asymp; $370/yr</dd>
+      <dt>Years to age 65</dt><dd>14</dd>
+    </dl>
   </div>
 
-  <!-- ── Error banner (shown if fetch fails) ── -->
-  <div class="error-banner hidden" id="errorBanner">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
-    Live data unavailable — showing last known snapshot.
+  <p class="read">You are behind the typical 51&#8209;year&#8209;old benchmark of $350K to $475K. You are not, however, behind in any way that fourteen years of disciplined action cannot close. The work below assumes you mean to close it.</p>
+</section>
+
+<hr class="divider">
+
+<section class="s" id="holdings">
+  <h2>What you actually own</h2>
+  <p class="lede">Your 2040 fund is not one investment &mdash; it is a basket of ten underlying funds. These are the top holdings, totaling roughly sixty&#8209;four percent of the fund.</p>
+
+  <table class="holdings">
+    <thead>
+      <tr><th>Ticker</th><th>Fund</th><th class="r">Weight</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="t">RLBGX</td><td>American Funds American Balanced R6</td><td class="r">8.05%</td></tr>
+      <tr><td class="t">RMFGX</td><td>American Funds American Mutual R6</td><td class="r">7.12%</td></tr>
+      <tr><td class="t">RWIGX</td><td>American Funds Capital World G&amp;I R6</td><td class="r">7.00%</td></tr>
+      <tr><td class="t">RAFGX</td><td>American Funds AMCAP R6</td><td class="r">6.69%</td></tr>
+      <tr><td class="t">RGAGX</td><td>American Funds Growth Fund of America R6</td><td class="r">6.68%</td></tr>
+      <tr><td class="t">RFNGX</td><td>American Funds Fundamental Investors R6</td><td class="r">6.64%</td></tr>
+      <tr><td class="t">RNPGX</td><td>American Funds New Perspective R6</td><td class="r">5.96%</td></tr>
+      <tr><td class="t">RWMGX</td><td>American Funds Washington Mutual R6</td><td class="r">5.74%</td></tr>
+      <tr><td class="t">RLLGX</td><td>American Funds SMALLCAP World R6</td><td class="r">5.55%</td></tr>
+      <tr><td class="t">RGVGX</td><td>American Funds US Government Securities R6</td><td class="r">5.00%</td></tr>
+      <tr class="total"><td></td><td>Top ten holdings</td><td class="r">64.42%</td></tr>
+    </tbody>
+  </table>
+
+  <p class="caption">By allocation: 54.8% domestic stock, 22.7% foreign stock, 15.3% domestic bond, 3.8% cash, 2.6% foreign bond. Geographically 73.5% US, with small positions in Japan, the UK, Canada, France, Germany, Switzerland. The fund itself charges you 0.71% &mdash; even though the underlying components are already the cheap R&#8209;6 share class. That is the gap Phase One closes.</p>
+</section>
+
+<hr class="divider">
+
+<section class="s" id="paths">
+  <h2>Three paths</h2>
+  <p class="lede">The same fourteen years, three different choices, three different lives at sixty&#8209;five.</p>
+
+  <svg class="chart" viewBox="0 0 720 290" role="img" aria-label="Bar chart comparing the three paths at age 61 and age 65">
+    <defs>
+      <style>
+        .bar-a{fill: oklch(0.78 0.015 50)}
+        .bar-b{fill: oklch(0.55 0.06 32)}
+        .bar-c{fill: oklch(0.42 0.105 32)}
+        .axis{stroke: oklch(0.86 0.012 60); stroke-width: 1}
+        .grid{stroke: oklch(0.92 0.008 60); stroke-width: 1; stroke-dasharray: 2,4}
+        .lbl{font: 500 11px "Inter", sans-serif; fill: oklch(0.42 0.018 50)}
+        .lbl-num{font: 600 12px "Inter", sans-serif; fill: oklch(0.22 0.02 50)}
+        .lbl-cat{font: 500 10px "Inter", sans-serif; fill: oklch(0.62 0.012 50); letter-spacing: 0.06em}
+        .lbl-y{font: 400 10px "Inter", sans-serif; fill: oklch(0.62 0.012 50)}
+      </style>
+    </defs>
+    <line class="axis" x1="60" y1="40" x2="700" y2="40"/>
+    <line class="grid" x1="60" y1="90" x2="700" y2="90"/>
+    <line class="grid" x1="60" y1="140" x2="700" y2="140"/>
+    <line class="grid" x1="60" y1="190" x2="700" y2="190"/>
+    <line class="axis" x1="60" y1="240" x2="700" y2="240"/>
+
+    <text x="50" y="244" class="lbl-y" text-anchor="end">$0</text>
+    <text x="50" y="194" class="lbl-y" text-anchor="end">$400K</text>
+    <text x="50" y="144" class="lbl-y" text-anchor="end">$800K</text>
+    <text x="50" y="94" class="lbl-y" text-anchor="end">$1.2M</text>
+    <text x="50" y="44" class="lbl-y" text-anchor="end">$1.6M</text>
+
+    <text x="200" y="265" class="lbl-cat" text-anchor="middle">AT AGE 61 &middot; 10 YEARS</text>
+    <rect class="bar-a" x="100" y="211" width="50" height="29"/>
+    <text x="125" y="205" class="lbl-num" text-anchor="middle">$232K</text>
+    <text x="125" y="281" class="lbl" text-anchor="middle">A</text>
+    <rect class="bar-b" x="165" y="166" width="50" height="74"/>
+    <text x="190" y="160" class="lbl-num" text-anchor="middle">$596K</text>
+    <text x="190" y="281" class="lbl" text-anchor="middle">B</text>
+    <rect class="bar-c" x="230" y="135" width="50" height="105"/>
+    <text x="255" y="129" class="lbl-num" text-anchor="middle">$844K</text>
+    <text x="255" y="281" class="lbl" text-anchor="middle">C</text>
+
+    <text x="540" y="265" class="lbl-cat" text-anchor="middle">AT AGE 65 &middot; 14 YEARS</text>
+    <rect class="bar-a" x="440" y="199" width="50" height="41"/>
+    <text x="465" y="193" class="lbl-num" text-anchor="middle">$332K</text>
+    <text x="465" y="281" class="lbl" text-anchor="middle">A</text>
+    <rect class="bar-b" x="505" y="125" width="50" height="115"/>
+    <text x="530" y="119" class="lbl-num" text-anchor="middle">$922K</text>
+    <text x="530" y="281" class="lbl" text-anchor="middle">B</text>
+    <rect class="bar-c" x="570" y="76" width="50" height="164"/>
+    <text x="595" y="70" class="lbl-num" text-anchor="middle">$1.31M</text>
+    <text x="595" y="281" class="lbl" text-anchor="middle">C</text>
+  </svg>
+
+  <table class="paths">
+    <thead><tr><th>Path</th><th>At 61</th><th>At 65</th><th>Annual income at 65*</th></tr></thead>
+    <tbody>
+      <tr class="a"><td>A &nbsp; Do nothing</td><td>$232K</td><td>$332K</td><td>~$13K + SS</td></tr>
+      <tr class="b"><td>B &nbsp; Realistic plan</td><td>$596K</td><td>$922K</td><td>~$37K + SS</td></tr>
+      <tr class="c"><td>C &nbsp; Full send</td><td>$844K</td><td>$1.31M</td><td>~$52K + SS</td></tr>
+    </tbody>
+  </table>
+  <p class="caption">*Using the 4% safe&#8209;withdrawal rule on the year&#8209;14 balance, plus Social Security on top (likely $28K&ndash;$35K/yr at your earnings record). These projections use Vanguard, JPMorgan, and BlackRock's 2026 capital&#8209;markets assumptions &mdash; roughly 5.5% US equity, 7.2% international, 4% bonds. Not promised. A reasonable midpoint.</p>
+</section>
+
+<hr class="divider">
+
+<section class="s" id="plan">
+  <h2>The plan</h2>
+  <p class="lede">Four phases. Each one is concrete. Each step is a thing you do, not a thing you consider.</p>
+
+  <div class="phase">
+    <p class="when">Phase one &middot; this month</p>
+    <h3>Fix the 401(k) you already have</h3>
+    <p class="why">The single biggest leak in your current setup is the fee on your fund. You are in the R&#8209;4 share class at 0.71%. The same fund exists in cheaper share classes &mdash; usually R&#8209;6 &mdash; at roughly a third of that. Over fourteen years, that one switch is worth tens of thousands of dollars in compounded growth.</p>
+    <ol class="actions">
+      <li>Log into your 401(k) plan portal. Find the full fund menu.</li>
+      <li>Look for one of these, ordered by preference:
+        <ul>
+          <li>An index target&#8209;date fund: <em>Vanguard Target Retirement 2040</em>, <em>Fidelity Freedom Index 2040</em>, or <em>Schwab Target Index 2040</em> &mdash; fees of 0.08% to 0.12%.</li>
+          <li>If no index TDF: the R&#8209;6 share class of American Funds 2040 (ticker RFETX) &mdash; fees around 0.33%.</li>
+          <li>If neither is offered: any S&amp;P 500 or total&#8209;US&#8209;stock index fund the plan has, paired with a bond index fund.</li>
+        </ul>
+      </li>
+      <li>Switch your existing balance and all future contributions to the cheaper fund. Keep the 2040 retirement&#8209;year vintage &mdash; it matches your timeline.</li>
+      <li>Increase your contribution rate from whatever it is now to <strong>at minimum 15% of salary</strong> &mdash; that is $17,850 a year. If you can afford it, the maximum is <strong>$32,500 a year</strong> in 2026 ($24,500 base plus an $8,000 catch&#8209;up because you are over 50).</li>
+      <li>Confirm your employer match is being fully captured. Whatever percentage they match to, contribute at least that much. The match is free money. Missing it is the only mistake that costs more than picking individual stocks.</li>
+    </ol>
   </div>
 
-  <!-- ── Kill banner ── -->
-  <div class="kill-banner hidden" id="killBanner">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 00-3.42 0z"/></svg>
-    Kill switch active — tilts paused, equal-weight DCA in effect.
+  <div class="phase">
+    <p class="when">Phase two &middot; next three months</p>
+    <h3>Build the parallel structure</h3>
+    <p class="why">One account is not a plan, it is a single point of failure. You need three streams running in parallel: the 401(k) for pre&#8209;tax growth, a taxable brokerage for flexible compounding, and an HSA if you have access to one. Each does something the others cannot.</p>
+    <ol class="actions">
+      <li>Open a taxable brokerage account at <strong>Fidelity</strong> or <strong>Vanguard</strong>. It is free and takes fifteen minutes online. No advisor required.</li>
+      <li>Set up an automatic deposit from each paycheck &mdash; <strong>10% of gross, every cycle</strong>, before the money touches your checking account. On a $119K salary that is roughly $991 a month. Treat it like rent you pay to your future self.</li>
+      <li>Inside that brokerage, buy three funds and nothing else:
+        <ul>
+          <li><strong>VTI</strong> &mdash; total US stock market &mdash; 70% of every deposit</li>
+          <li><strong>VXUS</strong> &mdash; total international stock market &mdash; 20%</li>
+          <li><strong>BND</strong> &mdash; total US bond market &mdash; 10%</li>
+        </ul>
+      </li>
+      <li>If you have access to an HSA through work, max it. In 2026 that is <strong>$4,400 self&#8209;only</strong> or <strong>$8,750 family</strong>. Do not leave it sitting in cash &mdash; invest it in the same three funds above. It is the most tax&#8209;advantaged account that exists in American law.</li>
+      <li>Open a Roth IRA at the same brokerage. Contribute the maximum: <strong>$7,500 plus $1,100 catch&#8209;up</strong> for being over 50, totaling $8,600 a year. If your income is over the Roth contribution limit you will need to do the "backdoor" &mdash; search "backdoor Roth IRA Fidelity step by step" for the five&#8209;step process.</li>
+      <li>Build an emergency fund. Six to twelve months of your actual expenses, parked in a high&#8209;yield savings account earning around 4%. <strong>Marcus by Goldman Sachs</strong>, <strong>Ally</strong>, or <strong>Wealthfront Cash</strong>. This is the layer that keeps you from selling your investments during a bad month.</li>
+    </ol>
   </div>
 
-  <div class="screens">
+  <div class="phase">
+    <p class="when">Phase three &middot; within twelve months</p>
+    <h3>Protect what you are building</h3>
+    <p class="why">You do not have a partner, family next door, or a community network to catch you if your health turns. That is the single biggest unmodeled risk to everything above. The mathematics of compounding does not care about a three&#8209;year nursing home stay; it just goes to zero. Insurance is how the math survives a body.</p>
+    <ol class="actions">
+      <li>Get long&#8209;term care insurance quotes <em>this year</em>. You are 51. Premiums roughly double after age 55, and underwriting gets stricter every year you wait. Request quotes from <strong>Mutual of Omaha</strong>, <strong>Northwestern Mutual</strong>, and <strong>New York Life</strong>. Also ask about hybrid life/LTC policies, which behave more like an asset than a sunk premium.</li>
+      <li>Confirm you have disability insurance through your employer. If your coverage is less than 60% of salary or excludes long&#8209;term disability, buy an individual policy. With no spouse, there is no second income to fall back on.</li>
+      <li>Spend $1,500 to $3,000 on an estate attorney, once. You will get:
+        <ul>
+          <li>A will naming specific beneficiaries so your state's intestacy law does not decide for you.</li>
+          <li>A healthcare power of attorney &mdash; name someone you trust, or if none exists, a licensed professional fiduciary in your state.</li>
+          <li>A living will (advance directive) covering end&#8209;of&#8209;life medical decisions.</li>
+          <li>Updated beneficiary designations on every account. These <em>override</em> the will &mdash; get them right.</li>
+        </ul>
+      </li>
+      <li>If you have pets, add pet&#8209;care provisions to your will: who takes them, with what funds, under what conditions.</li>
+    </ol>
+  </div>
 
-    <!-- ── Screen 1: Memo ── -->
-    <div class="screen active" id="screen-memo">
-      <div class="page-header">
-        <div class="label" id="memoWeekLabel">Loading…</div>
-        <h1>Iggavestment</h1>
+  <div class="phase">
+    <p class="when">Phase four &middot; year one and ongoing</p>
+    <h3>Tax&#8209;optimize the whole thing</h3>
+    <p class="why">A small amount of professional help, once, locks in choices that compound for the next thirty years. The trick is buying it the right way &mdash; flat fees, not a percentage of your assets. The percentage model quietly eats six figures.</p>
+    <ol class="actions">
+      <li>Pay for one consultation with a <strong>fee&#8209;only fiduciary CFP</strong>. Flat fee, $1,500 to $3,000, one time. You can find one at <em>NAPFA.org</em> or <em>XYPlanningNetwork.com</em>. Specifically ask them to decide:
+        <ul>
+          <li>Roth vs Traditional 401(k) split, based on your expected retirement bracket</li>
+          <li>Social Security claiming age &mdash; 62, 67, or 70 (the difference is over $200K in lifetime benefits)</li>
+          <li>Asset location: which account holds which type of investment</li>
+        </ul>
+      </li>
+      <li>Find a CPA who does <strong>tax planning, not just tax filing</strong>. $500 to $1,000 a year. Ask them about:
+        <ul>
+          <li>Tax&#8209;loss harvesting in your taxable brokerage</li>
+          <li>Whether your 401(k) plan offers after&#8209;tax contributions plus in&#8209;service conversions &mdash; the "mega backdoor Roth," which could add up to $46,000 a year of extra Roth space</li>
+          <li>State&#8209;tax optimization if you ever move in retirement</li>
+        </ul>
+      </li>
+      <li>Apply the asset&#8209;location rule: keep bonds inside your 401(k) where ordinary&#8209;income tax is deferred, keep equity index funds in the taxable brokerage where long&#8209;term capital gains are taxed at lower rates. Most investors get this backwards and pay a hidden penalty for it.</li>
+    </ol>
+  </div>
+</section>
+
+<hr class="divider">
+
+<section class="s" id="tilt">
+  <h2>An optional tilt</h2>
+  <p class="lede">For up to fifteen percent of your taxable brokerage &mdash; not the 401(k), not the Roth &mdash; if you want a small thematic position alongside the index core.</p>
+
+  <p>The seven themes below are the ones we think are mispriced over a five&#8209;to&#8209;ten&#8209;year horizon because of artificial intelligence and a reordering of global supply chains. They are <em>not</em> a replacement for the index funds in Phase Two &mdash; they are a small satellite, capped at <strong>10&ndash;15% of your taxable brokerage only</strong>. If they double, you do well. If they go to zero, you barely notice. That is the right size for a conviction bet.</p>
+
+  <p>Buy them as ETFs, not individual stocks. Rebalance once a year in January. Do not look at them in between.</p>
+
+  <p>Each line below shows a <strong>live conviction score</strong> from 0 to 100, refreshed twice daily by reading the SEC, FDA, NASA, the Department of Energy, the Federal Register, and other public feeds. Fifty means no signal. Above sixty means evidence has accumulated. Below forty means the case is weakening.</p>
+
+  <ul class="tilt-list" id="tilt-live">
+    <li data-theme="tech_ai">
+      <span class="name">Tech &amp; AI semiconductors</span>
+      <span class="reason">The picks&#8209;and&#8209;shovels of the AI build&#8209;out. Whoever wins the model race, the chips ship.</span>
+      <span class="meta"><span class="conv" data-conv>&mdash;</span><span class="ticker">SMH</span></span>
+    </li>
+    <li data-theme="robotics">
+      <span class="name">Robotics &amp; automation</span>
+      <span class="reason">Labor scarcity meets capable hardware. Surgical robots, factory arms, warehouse fleets.</span>
+      <span class="meta"><span class="conv" data-conv>&mdash;</span><span class="ticker">BOTZ &middot; ROBO</span></span>
+    </li>
+    <li data-theme="space">
+      <span class="name">Space economy</span>
+      <span class="reason">Launch costs collapsing. Satellite constellations replacing terrestrial infrastructure.</span>
+      <span class="meta"><span class="conv" data-conv>&mdash;</span><span class="ticker">UFO &middot; ARKX</span></span>
+    </li>
+    <li data-theme="energy">
+      <span class="name">Nuclear &amp; LNG energy</span>
+      <span class="reason">AI data centers need power that exists, not power that is projected. Nuclear restart and LNG export are the answer.</span>
+      <span class="meta"><span class="conv" data-conv>&mdash;</span><span class="ticker">URA &middot; NLR</span></span>
+    </li>
+    <li data-theme="rare_earth">
+      <span class="name">Rare earth &amp; critical minerals</span>
+      <span class="reason">The West is rebuilding a supply chain it spent forty years offshoring. Strategic stockpiles return.</span>
+      <span class="meta"><span class="conv" data-conv>&mdash;</span><span class="ticker">REMX</span></span>
+    </li>
+    <li data-theme="food_ag">
+      <span class="name">Food &amp; agriculture</span>
+      <span class="reason">Fertilizer, seed genetics, and farmland are how a re&#8209;globalizing world feeds itself.</span>
+      <span class="meta"><span class="conv" data-conv>&mdash;</span><span class="ticker">DBA &middot; MOO</span></span>
+    </li>
+    <li data-theme="bio">
+      <span class="name">Biotech</span>
+      <span class="reason">AI&#8209;accelerated drug discovery starts hitting clinical data over the next five years.</span>
+      <span class="meta"><span class="conv" data-conv>&mdash;</span><span class="ticker">XBI</span></span>
+    </li>
+  </ul>
+
+  <p class="caption" id="tilt-updated">Refreshing live data&hellip;</p>
+
+  <p class="caption" style="margin-top:1.5rem">An equal&#8209;weight slice of the seven, sitting on top of eighty&#8209;five percent boring index funds, is a defensible expression of conviction. A hundred&#8209;percent bet on any one of them is gambling. Know the difference.</p>
+</section>
+
+<hr class="divider">
+
+<section class="s" id="rules">
+  <h2>The rules</h2>
+  <p class="lede">Write these once, while you are calm. Re&#8209;read them when you are not.</p>
+
+  <div class="pledge">
+    <p class="pledge-head">&mdash; A pledge to yourself &mdash;</p>
+    <ol>
+      <li>I will not check the balance more than once a month.</li>
+      <li>I will not sell during a market drop. Drops are normal. I expect them.</li>
+      <li>I will not chase a hot stock, a cryptocurrency, or whatever is in the news.</li>
+      <li>I will not take a 401(k) loan, for any reason short of true emergency.</li>
+      <li>I will not move my money to an advisor who charges a percentage of assets. Fee&#8209;only or nothing.</li>
+      <li>I will rebalance once a year, in January, and otherwise leave it alone.</li>
+      <li>I will increase my contribution percentage every year that I get a raise.</li>
+      <li>I will re&#8209;read this document every January 1st, and update it for changes in tax law.</li>
+    </ol>
+    <div class="sig">
+      <div>
+        <div class="line">&nbsp;</div>
+        <div class="label">Signature</div>
       </div>
-      <div class="stats-row">
-        <div class="stat-card"><div class="stat-label">Contributed YTD</div><div class="stat-value" id="stat-ytd">—</div></div>
-        <div class="stat-card"><div class="stat-label">Total Value</div><div class="stat-value" id="stat-value">—</div></div>
-        <div class="stat-card"><div class="stat-label">vs SPY YTD</div><div class="stat-value" id="stat-spy">—</div></div>
-        <div class="stat-card"><div class="stat-label">Tilt α YTD</div><div class="stat-value" id="stat-alpha">—</div></div>
+      <div>
+        <div class="line">&nbsp;</div>
+        <div class="label">Date</div>
       </div>
-      <!-- FIX 7: validation status bar — hidden when live -->
-      <div id="validationStatusBar" style="display:none;font-size:11px;color:var(--text-3);padding:4px 16px 8px;line-height:1.4"></div>
-      <div class="section-label" id="memoSectionLabel">Loading themes…</div>
-      <div id="themeCards"><div class="loading-placeholder">Fetching latest data…</div></div>
     </div>
+  </div>
+</section>
 
-    <!-- ── Screen 2: Deploy ── -->
-    <div class="screen" id="screen-deploy">
-      <div class="deploy-header">
-        <div class="week-label" id="deployDateLabel">—</div>
-        <h2>This Week's Deployment</h2>
-        <div class="total-line" id="deployTotalLine">—</div>
-      </div>
-      <div class="deploy-cols" id="deployCols"><div class="loading-placeholder">Loading…</div></div>
-      <button class="copy-btn" id="copyBtn" onclick="copyDCA()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
-        Copy DCA Instructions
-      </button>
-      <div class="steps-card">
-        <div class="steps-title">Fidelity Walkthrough</div>
-        <div class="step-item"><div class="step-num">1</div><div class="step-text">Open <strong>Fidelity.com</strong> → Accounts → <strong>Roth IRA</strong></div></div>
-        <div class="step-item"><div class="step-num">2</div><div class="step-text">Transact → Recurring Investments → <strong>Edit</strong> each ticker amount to match the Roth column above</div></div>
-        <div class="step-item"><div class="step-num">3</div><div class="step-text">Switch to <strong>Individual (Taxable)</strong> account → repeat for Taxable column</div></div>
-        <div class="step-item"><div class="step-num">4</div><div class="step-text">Confirm ACH of <strong>$250 on Monday</strong>. Changes apply next market open.</div></div>
-      </div>
-    </div>
+<hr class="divider">
 
-    <!-- ── Screen 3: History ── -->
-    <div class="screen" id="screen-history">
-      <div class="page-header"><div class="label">Kill Switches &amp; Status</div><h1>Health</h1></div>
-      <!-- FIX 4: data-collecting notice -->
-      <div id="ks-collecting-notice" style="display:none;font-size:11px;color:var(--text-3);padding:6px 14px 2px;line-height:1.4"></div>
-      <div class="kill-status-table" id="killStatusTable">
-        <div class="ks-row header"><div>Kill Switch</div><div>Threshold</div><div>Current</div><div>Status</div></div>
-        <div class="ks-row"><div class="ks-name">Max drawdown 12mo</div><div class="ks-val">&gt;25%</div><div class="ks-val" id="ks-drawdown">—</div><div class="ks-status ok" id="ks-drawdown-status">OK</div></div>
-        <div class="ks-row"><div class="ks-name">Tilt hit-rate 24mo</div><div class="ks-val">&lt;48%</div><div class="ks-val" id="ks-hitrate">—</div><div class="ks-status ok" id="ks-hitrate-status">OK</div></div>
-        <div class="ks-row"><div class="ks-name">LLM-tilt cum. α</div><div class="ks-val">&lt;−4%</div><div class="ks-val" id="ks-alpha">—</div><div class="ks-status ok" id="ks-alpha-status">OK</div></div>
-      </div>
-      <div class="history-chart">
-        <div class="chart-title">
-          Conviction Sparklines (all themes)
-          <div class="chart-legend">
-            <div class="legend-item"><div class="legend-dot" style="background:var(--accent)"></div>14 periods</div>
-          </div>
-        </div>
-        <div id="sparklineGrid"></div>
-      </div>
-      <div class="kill-status-table" style="margin-top:8px">
-        <div class="ks-row header"><div>Feed</div><div colspan="3">Status</div></div>
-        <div id="feedStatusRows"><div class="ks-row"><div class="ks-name" colspan="4" style="color:var(--text-3);font-size:12px">Loading…</div></div></div>
-      </div>
-    </div>
+<section class="s" id="change">
+  <h2>When things change</h2>
+  <p class="lede">A short list of moments the rest of the plan is silent about, and what the correct answer is anyway.</p>
 
-  </div><!-- /screens -->
+  <dl class="scenarios">
+    <dt>If the market drops 30%.</dt>
+    <dd>Do not sell. Keep contributing. A 30% drop is the price index&#8209;fund investors pay roughly once a decade for the long&#8209;run return. The contributions you make during the drop are the ones that compound the hardest. The worst investors are the ones who panic; the second&#8209;worst are the ones who stop contributing until things "settle."</dd>
 
-  <nav class="nav">
-    <button class="nav-item active" onclick="showScreen('memo',this)">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-      Conviction
-    </button>
-    <button class="nav-item" onclick="showScreen('deploy',this)">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
-      Deploy
-    </button>
-    <button class="nav-item" onclick="showScreen('history',this)">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
-      Health
-    </button>
-  </nav>
+    <dt>If you change jobs.</dt>
+    <dd>Roll the old 401(k) into a rollover IRA at Fidelity or Vanguard. Do not cash it out. Do not leave it at the old employer's plan unless it has unusually cheap institutional funds. The IRA gives you control of share class and gives you room for future Roth conversions.</dd>
 
-  <footer class="site-footer" id="site-footer">
-    v1.0.0 · Iggavestment · <a href="https://github.com/xavierdjones/iggavestment" target="_blank" rel="noopener">GitHub</a>
-  </footer>
+    <dt>If you get a raise.</dt>
+    <dd>Increase your 401(k) contribution percentage first, then enjoy what is left. Lifestyle creep is the single biggest reason mid&#8209;career professionals retire poor. The raise is the easiest moment to redirect, because you never got used to having the money.</dd>
 
-</div><!-- /app -->
+    <dt>If you inherit money or get a windfall.</dt>
+    <dd>Do nothing for six months. Park it in the high&#8209;yield savings account. Make no decisions in grief, excitement, or under pressure from anyone who suddenly has opinions about your finances. After six months, follow the plan above: max accounts in order, fill the emergency fund, then the taxable brokerage.</dd>
+
+    <dt>If someone offers to manage your money.</dt>
+    <dd>Ask them, in writing, two questions. <em>Are you a fiduciary, all the time, to me, in writing?</em> And, <em>do you charge a flat fee or a percentage of my assets?</em> If the answer to the first is no, walk. If the answer to the second is "percentage," walk. There are no exceptions.</dd>
+  </dl>
+</section>
+
+<hr class="divider">
+
+<section class="s" id="not-doing">
+  <h2>What you are deliberately not doing</h2>
+  <p class="lede">Every item on this list is something most people lose money on. Knowing why you are skipping them is part of the discipline.</p>
+
+  <ul class="dont">
+    <li><strong>Individual stock picking.</strong> Across any twenty&#8209;year window, roughly 95% of stock&#8209;pickers underperform a plain index fund. The 5% who win are mostly luck. You don't need to win &mdash; you need to not lose.</li>
+    <li><strong>Market timing.</strong> The biggest single&#8209;day gains historically happen within days of the biggest single&#8209;day drops. Selling locks you out of the recovery. Holding through both is the entire game.</li>
+    <li><strong>Crypto as an allocation.</strong> No income stream, no proven inflation hedge across a real cycle, extreme volatility. If you want exposure for fun, cap it at 1&ndash;2% of net worth and treat the rest as zero. Do not put retirement money there.</li>
+    <li><strong>Annuities.</strong> Sold hard for a reason &mdash; the commissions are enormous. They lock your money up, charge high internal fees, and rarely beat what you'd earn doing the boring index plan above.</li>
+    <li><strong>"Alternative investments" pitched in person.</strong> Private real estate funds, structured notes, life&#8209;settlement contracts, art funds. If someone in a suit is explaining it to you, it is almost certainly designed to pay them, not you.</li>
+    <li><strong>An advisor on a percentage&#8209;of&#8209;assets fee.</strong> A 1% AUM fee on $1 million is $10,000 every year, forever. Over thirty years that compounds to more than a quarter of your portfolio. Flat fees only.</li>
+  </ul>
+</section>
+
+<hr class="divider">
+
+<section class="s" id="pros">
+  <h2>Professional help you actually need</h2>
+  <p class="lede">Four expenses, total. Roughly five to seven thousand dollars, every several years. That is the entire budget for outside help in this plan.</p>
+
+  <table class="pros">
+    <thead><tr><th>Who</th><th>Cost</th><th>Cadence</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>Fee&#8209;only fiduciary CFP<span class="sub-row">NAPFA.org or XYPlanningNetwork.com</span></td>
+        <td>$1,500&ndash;$3,000</td>
+        <td>Once, then every 5 yrs</td>
+      </tr>
+      <tr>
+        <td>Tax&#8209;planning CPA<span class="sub-row">Not just a tax&#8209;filer &mdash; an actual planner</span></td>
+        <td>$500&ndash;$1,000</td>
+        <td>Annual, every December</td>
+      </tr>
+      <tr>
+        <td>Estate attorney<span class="sub-row">Local. Will, POAs, beneficiaries.</span></td>
+        <td>$1,500&ndash;$3,000</td>
+        <td>Once, update every 10 yrs</td>
+      </tr>
+      <tr>
+        <td>LTC insurance broker<span class="sub-row">Independent, not captive to one carrier</span></td>
+        <td>Free (commissioned)</td>
+        <td>Once, before age 55</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p class="caption" style="margin-top:1.25rem">Total: roughly $5,000&ndash;$7,000 every several years, plus the CPA annually. By contrast, a 1%&#8209;of&#8209;assets advisor on a $1M portfolio bills $10,000 every year and produces, on average, a worse outcome. The math is not close.</p>
+</section>
+
+<footer class="doc">
+  <p>This document is informational. It is not financial, legal, or tax advice. Before moving money, verify the specifics with the professionals named above.</p>
+  <p>The projections use 2026 capital&#8209;markets assumptions published by Vanguard, JPMorgan Asset Management, and BlackRock. Markets may deliver higher or lower returns. The discipline matters more than the forecast.</p>
+  <p class="ver">v1.0 &middot; 22 May 2026 &middot; for personal use</p>
+</footer>
+
+</main>
 
 <script>
-// ─── Fallback data (shown if fetch fails) ──────────────────────────────────────
-
-const FALLBACK_STATE = {
-  version: "1.0.0",
-  generated_at: new Date().toISOString(),
-  next_refresh_at: new Date(Date.now() + 6 * 3600000).toISOString(),
-  stale: true,
-  stale_feeds: [],
-  degraded: true,
-  themes: [
-    { id: "bio",        name: "Biotech (XBI)",          conviction: 50, tilt_pct: 0,   weekly_dollars: 40.00, account: "Roth",    core_tickers: ["XBI"],            bench_tickers: ["IBB","LLY"],       watch_tickers: ["ARKG"],   sparkline: [50,50,50,50,50,50,50,50,50,50,50,50,50,50], why: "Fallback — live data unavailable.", thesis_state: "intact", kill_flags_triggered: [], top_events: [] },
-    { id: "tech_ai",    name: "Tech/AI Semis (SMH)",    conviction: 50, tilt_pct: 0,   weekly_dollars: 40.00, account: "Roth",    core_tickers: ["SMH"],            bench_tickers: ["SOXX","AVGO"],    watch_tickers: ["ASML"],   sparkline: [50,50,50,50,50,50,50,50,50,50,50,50,50,50], why: "Fallback — live data unavailable.", thesis_state: "intact", kill_flags_triggered: [], top_events: [] },
-    { id: "robotics",   name: "Robotics (ISRG+ABB)",   conviction: 50, tilt_pct: 0,   weekly_dollars: 25.00, account: "Roth",    core_tickers: ["ISRG","ABB"],     bench_tickers: ["SYM","KTOS"],     watch_tickers: ["TSLA"],   sparkline: [50,50,50,50,50,50,50,50,50,50,50,50,50,50], why: "Fallback — live data unavailable.", thesis_state: "intact", kill_flags_triggered: [], top_events: [] },
-    { id: "energy",     name: "Energy/Nuclear/LNG",    conviction: 50, tilt_pct: 0,   weekly_dollars: 30.00, account: "Roth",    core_tickers: ["URA","VST","LNG"], bench_tickers: ["URNM","CEG"],     watch_tickers: ["TLN"],    sparkline: [50,50,50,50,50,50,50,50,50,50,50,50,50,50], why: "Fallback — live data unavailable.", thesis_state: "intact", kill_flags_triggered: [], top_events: [] },
-    { id: "space",      name: "Space (RKLB/ASTS)",     conviction: 50, tilt_pct: 0,   weekly_dollars: 30.00, account: "Taxable", core_tickers: ["RKLB","ASTS"],    bench_tickers: ["PL","LUNR"],      watch_tickers: ["UFO"],    sparkline: [50,50,50,50,50,50,50,50,50,50,50,50,50,50], why: "Fallback — live data unavailable.", thesis_state: "intact", kill_flags_triggered: [], top_events: [] },
-    { id: "rare_earth", name: "Rare Earth (MP/LYC)",   conviction: 50, tilt_pct: 0,   weekly_dollars: 25.00, account: "Taxable", core_tickers: ["MP","LYSCF","USAR"], bench_tickers: ["UUUU"],       watch_tickers: [],         sparkline: [50,50,50,50,50,50,50,50,50,50,50,50,50,50], why: "Fallback — live data unavailable.", thesis_state: "intact", kill_flags_triggered: [], top_events: [] },
-    { id: "food_ag",    name: "Food/Ag (NTR/CTVA)",    conviction: 50, tilt_pct: 0,   weekly_dollars: 20.00, account: "Taxable", core_tickers: ["NTR","CTVA","DBA"], bench_tickers: ["MOS","CF"],    watch_tickers: ["IPI"],    sparkline: [50,50,50,50,50,50,50,50,50,50,50,50,50,50], why: "Fallback — live data unavailable.", thesis_state: "intact", kill_flags_triggered: [], top_events: [] },
-  ],
-  reserve: { sgov_dry_powder: 25.00, leap_accumulation: 15.00, total_reserve: 40.00 },
-  deploy: { roth_total: 135, taxable_total: 75, reserve_total: 40, roth_breakdown: [], taxable_breakdown: [], leap_progress: { current: 0, target: 2500, candidate: "MSFT" } },
-  kill_switches: { max_drawdown_pct: null, rolling_hit_rate: null, alpha_drawdown_pct: null, triggered: false, warnings: [], status: "data_collecting", weeks_collected: 0, weeks_needed: 30 },
-  metrics: { total_contributed_ytd: 0, total_value: 0, vs_spy_ytd_pct: null, vs_equal_weight_pct: null, tilt_alpha_ytd_pct: null, validation_status: "collecting", weeks_collected: 0 },
-};
-
-// ─── State ────────────────────────────────────────────────────────────────────
-
-let DATA = null;
-let usingFallback = false;
-
-// ─── Data fetch ───────────────────────────────────────────────────────────────
-
-async function loadData(forceRefresh = false) {
-  const url = '/data/state.json?t=' + Date.now();
-  try {
-    const resp = await fetch(url, { cache: 'no-store' });
-    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-    DATA = await resp.json();
-    usingFallback = false;
-    document.getElementById('errorBanner').classList.add('hidden');
-  } catch (e) {
-    console.warn('Failed to fetch state.json, using fallback:', e);
-    if (!DATA) {
-      DATA = FALLBACK_STATE;
-      usingFallback = true;
-    }
-    document.getElementById('errorBanner').classList.remove('hidden');
-  }
-  renderAll();
-}
-
-function manualRefresh() {
-  const btn = document.getElementById('refreshBtn');
-  btn.classList.add('spinning');
-  loadData(true).finally(() => btn.classList.remove('spinning'));
-}
-
-// ─── Navigation ───────────────────────────────────────────────────────────────
-
-function showScreen(id, btn) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  const target = document.getElementById('screen-' + id);
-  if (target) target.classList.add('active');
-  if (btn) btn.classList.add('active');
-}
-
-// ─── Status bar ───────────────────────────────────────────────────────────────
-
-function renderStatusBar() {
-  if (!DATA) return;
-  const dot  = document.getElementById('statusDot');
-  const text = document.getElementById('statusText');
-  const genAt = new Date(DATA.generated_at);
-  const now   = new Date();
-  const ageHours = (now - genAt) / 3600000;
-  const nextAt   = new Date(DATA.next_refresh_at);
-
-  dot.className = 'status-dot ' + (ageHours < 12 ? 'green' : ageHours < 24 ? 'yellow' : 'red');
-
-  const genStr  = genAt.toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', timeZoneName: 'short' });
-  const nextStr = nextAt.toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', timeZoneName: 'short' });
-
-  text.textContent = `Updated ${genStr} · Next ~${nextStr}${DATA.stale ? ' · ⚠ stale feeds' : ''}`;
-}
-
-// ─── Kill banner ──────────────────────────────────────────────────────────────
-
-function renderKillBanner() {
-  if (!DATA) return;
-  const el = document.getElementById('killBanner');
-  if (DATA.kill_switches && DATA.kill_switches.triggered) {
-    el.classList.remove('hidden');
-  } else {
-    el.classList.add('hidden');
-  }
-}
-
-// ─── Helpers ─────────────────────────────────────────────────────────────────
-
-function fmtMoney(v) { return '$' + (v || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
-function fmtPct(v) {
-  const n = parseFloat(v) || 0;
-  return (n >= 0 ? '+' : '') + n.toFixed(2) + '%';
-}
-
-function buildSparkline(data) {
-  const w = 80, h = 32, pad = 2;
-  const mn = Math.min(...data), mx = Math.max(...data);
-  const range = mx - mn || 1;
-  const pts = data.map((v, i) => {
-    const x = pad + (i / (data.length - 1)) * (w - 2*pad);
-    const y = h - pad - ((v - mn) / range) * (h - 2*pad);
-    return [x, y];
-  });
-  const pline = pts.map(p => p.join(',')).join(' ');
-  const last = pts[pts.length-1];
-  const areaClose = `L${last[0]},${h} L${pts[0][0]},${h} Z`;
-  const areaPath = `M${pts.map(p=>p.join(',')).join('L')} ${areaClose}`;
-  return `<svg class="sparkline" viewBox="0 0 ${w} ${h}">
-  <path class="spark-area" d="${areaPath}"/>
-  <polyline class="spark-line" points="${pline}"/>
-</svg>`;
-}
-
-function tiltChipClass(tilt_pct) {
-  if (tilt_pct > 0) return 'up';
-  if (tilt_pct < 0) return 'dn';
-  return 'flat';
-}
-
-function tiltChipLabel(tilt_pct) {
-  if (tilt_pct === 0) return '0';
-  return (tilt_pct > 0 ? '+' : '') + tilt_pct.toFixed(1) + '%';
-}
-
-// ─── Theme cards (FIX 6: confidence states, FIX 7: cold-start sparkline) ──────
-
-function buildThemeCard(t) {
-  // FIX 6: confidence-aware rendering
-  const conf = t.confidence || 'no_data';
-  const noData = conf === 'no_data';
-  const nameStyle = noData ? 'color:var(--text-3)' : '';
-
-  const tiltCls = noData ? 'flat' : tiltChipClass(t.tilt_pct);
-  const tiltLbl = noData ? 'n/a' : tiltChipLabel(t.tilt_pct);
-
-  // Conviction display: "—" for no_data
-  const convDisplay = noData ? '—' : String(t.conviction);
-
-  // Confidence dot (low=yellow, high=green, no_data/medium=none)
-  let confDot = '';
-  if (conf === 'low')  confDot = '<span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--warn);margin-left:4px;vertical-align:middle"></span>';
-  if (conf === 'high') confDot = '<span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--up);margin-left:4px;vertical-align:middle"></span>';
-
-  const coreChips = t.core_tickers.map(tk => `<span class="ticker-chip"${noData ? ' style="opacity:0.5"' : ''}>${tk}</span>`).join('');
-
-  let eventsHTML = '';
-  if (t.top_events && t.top_events.length) {
-    eventsHTML = t.top_events.slice(0,5).map(e => {
-      const dotCls = e.direction > 0 ? 'up' : e.direction < 0 ? 'dn' : '';
-      return `<div class="event-item">
-        <div class="event-dot ${dotCls}"></div>
-        <div>
-          <div class="event-text">${e.title || e.rationale || ''}</div>
-          ${e.url ? `<a class="event-link" href="${e.url}" target="_blank" rel="noopener">${e.url.replace('https://','').split('/')[0]}</a>` : ''}
-        </div>
-      </div>`;
-    }).join('');
-  }
-
-  let killFlagsHTML = '';
-  if (t.kill_flags_triggered && t.kill_flags_triggered.length) {
-    killFlagsHTML = `<div style="margin-bottom:8px">${t.kill_flags_triggered.map(f => `<span class="kill-flag-chip">⚠ ${f}</span>`).join('')}</div>`;
-  }
-
-  let benchHTML = '';
-  if (t.bench_tickers && t.bench_tickers.length) {
-    benchHTML = `<div class="bench-section">
-      <div class="bench-section-title">Bench</div>
-      <div class="bench-ticker-row">${t.bench_tickers.map(tk => `<span class="ticker-chip bench">${tk}</span>`).join('')}</div>
-    </div>`;
-  }
-  let watchHTML = '';
-  if (t.watch_tickers && t.watch_tickers.length) {
-    watchHTML = `<div class="bench-section">
-      <div class="bench-section-title">Watch</div>
-      <div class="bench-ticker-row">${t.watch_tickers.map(tk => `<span class="ticker-chip watch">${tk}</span>`).join('')}</div>
-    </div>`;
-  }
-
-  // FIX 7 + FIX H: cold-start sparkline — empty array → "Building history · week X of 14"
-  let sparklineHTML;
-  if (!t.sparkline || t.sparkline.length === 0) {
-    const weekNum = (t.sparkline && t.sparkline.length > 0) ? t.sparkline.length : (t.event_count_7d > 0 ? 1 : 0);
-    const wk = Math.max(1, Math.min(weekNum, 13));
-    sparklineHTML = `<div style="font-size:10px;color:var(--text-3);text-align:center;width:80px;line-height:1.5"><em>Building history</em><br>week ${wk} of 14</div>`;
-  } else {
-    sparklineHTML = buildSparkline(t.sparkline);
-  }
-  // Override sparkline fill to gray when no_data
-  if (noData) {
-    const wk2 = Math.max(1, Math.min((t.sparkline || []).length || 1, 13));
-    sparklineHTML = `<div style="font-size:10px;color:var(--text-3);text-align:center;width:80px;line-height:1.5"><em>Building history</em><br>week ${wk2} of 14</div>`;
-  }
-
-  // FIX J: last_change caption
-  let lastChangeHTML = '';
-  const lc = t.last_change;
-  if (lc && lc.direction !== 'new' && lc.since_date) {
-    const sign  = lc.delta > 0 ? '+' : '';
-    const arrow = lc.direction === 'up' ? '↑' : lc.direction === 'down' ? '↓' : '→';
-    const clr   = lc.direction === 'up' ? 'var(--up)' : lc.direction === 'down' ? 'var(--dn)' : 'var(--text-3)';
-    lastChangeHTML = `<span style="font-size:10px;color:${clr};margin-left:6px">${arrow} ${sign}${lc.delta} since ${lc.since_date}</span>`;
-  } else if (lc && lc.direction === 'new') {
-    lastChangeHTML = `<span style="font-size:10px;color:var(--text-3);margin-left:6px">new</span>`;
-  }
-
-  return `
-<div class="theme-card" id="card-${t.id}">
-  <div class="theme-main" onclick="toggleCard('${t.id}')">
-    <div style="grid-column:1">
-      <div class="theme-top">
-        <div class="theme-name" style="${nameStyle}">${t.name}</div>
-        <div class="theme-conviction" style="${noData ? 'color:var(--text-3)' : ''}">${convDisplay}${confDot}${lastChangeHTML}</div>
-      </div>
-      <div class="theme-mid">
-        <span class="tilt-chip ${tiltCls}" style="${noData ? 'opacity:0.5' : ''}">${tiltLbl}</span>
-        <span class="theme-alloc">${fmtMoney(t.weekly_dollars)}/wk</span>
-        <span class="theme-account-chip">${t.account}</span>
-      </div>
-      <div class="theme-why" style="${noData ? 'color:var(--text-3)' : ''}">${noData ? 'No signal this week · accumulating data' : (t.why || '')}</div>
-      <div class="tickers-row">${coreChips}</div>
-    </div>
-    <div class="theme-spark-col">
-      ${sparklineHTML}
-      <svg class="expand-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
-      </svg>
-    </div>
-  </div>
-  <div class="theme-events" id="events-${t.id}">
-    <div class="events-inner">
-      ${killFlagsHTML}
-      ${eventsHTML || '<div style="font-size:12px;color:var(--text-3)">No recent events scored.</div>'}
-      ${benchHTML}
-      ${watchHTML}
-    </div>
-  </div>
-</div>`;
-}
-
-function renderThemeCards() {
-  if (!DATA) return;
-  const container = document.getElementById('themeCards');
-  const lbl = document.getElementById('memoSectionLabel');
-  const weekLbl = document.getElementById('memoWeekLabel');
-
-  container.innerHTML = DATA.themes.map(t => buildThemeCard(t)).join('');
-  if (lbl) lbl.textContent = `${DATA.themes.length} Themes${DATA.degraded ? ' · Degraded' : ''}`;
-
-  const genAt = new Date(DATA.generated_at);
-  if (weekLbl) weekLbl.textContent = genAt.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-}
-
-function toggleCard(id) {
-  const card = document.getElementById('card-' + id);
-  if (card) card.classList.toggle('expanded');
-}
-
-// ─── Stats (FIX 7: validation status bar) ────────────────────────────────────
-
-function renderStats() {
-  if (!DATA) return;
-  const m = DATA.metrics || {};
-  const ytd = document.getElementById('stat-ytd');
-  const val = document.getElementById('stat-value');
-  const spy = document.getElementById('stat-spy');
-  const alp = document.getElementById('stat-alpha');
-  const vstBar = document.getElementById('validationStatusBar');
-
-  if (ytd) ytd.textContent = m.total_contributed_ytd > 0 ? fmtMoney(m.total_contributed_ytd) : '—';
-  if (val) val.textContent = m.total_value > 0 ? fmtMoney(m.total_value) : '—';
-
-  const vStatus = m.validation_status || 'collecting';
-  const wk = m.weeks_collected || 0;
-
-  if (spy) {
-    if (vStatus === 'live' && m.vs_spy_ytd_pct != null) {
-      spy.textContent = fmtPct(m.vs_spy_ytd_pct);
-      spy.className = 'stat-value ' + (m.vs_spy_ytd_pct > 0 ? 'pos' : m.vs_spy_ytd_pct < 0 ? 'neg' : '');
-    } else {
-      spy.textContent = '—';
-      spy.className = 'stat-value';
-    }
-  }
-  if (alp) {
-    if (vStatus === 'live' && m.tilt_alpha_ytd_pct != null) {
-      alp.textContent = fmtPct(m.tilt_alpha_ytd_pct);
-      alp.className = 'stat-value ' + (m.tilt_alpha_ytd_pct > 0 ? 'pos' : m.tilt_alpha_ytd_pct < 0 ? 'neg' : '');
-    } else {
-      alp.textContent = '—';
-      alp.className = 'stat-value';
-    }
-  }
-
-  // Validation status bar
-  if (vstBar) {
-    let msg = '';
-    if (vStatus === 'collecting') {
-      msg = `Validation: week ${wk} of 104 · no edge claim yet · accumulating data`;
-    } else if (vStatus === 'in_progress') {
-      const alpha = m.tilt_alpha_ytd_pct != null ? ` · preliminary α = ${fmtPct(m.tilt_alpha_ytd_pct)} (not yet significant)` : '';
-      msg = `Validation: week ${wk} of 104${alpha}`;
-    } else {
-      msg = `Validation: live · week ${wk}`;
-    }
-    vstBar.textContent = msg;
-    vstBar.style.display = vStatus !== 'live' ? 'block' : 'none';
-  }
-}
-
-// ─── Deploy screen ────────────────────────────────────────────────────────────
-
-function renderDeployScreen() {
-  if (!DATA || !DATA.deploy) return;
-  const d = DATA.deploy;
-  const dateLbl = document.getElementById('deployDateLabel');
-  const totalLine = document.getElementById('deployTotalLine');
-  const cols = document.getElementById('deployCols');
-
-  const genAt = new Date(DATA.generated_at);
-  if (dateLbl) dateLbl.textContent = genAt.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
-  const deployedTotal = (d.roth_total || 0) + (d.taxable_total || 0);
-  const reserveTotal  = d.reserve_total || (DATA.reserve && DATA.reserve.total_reserve) || 0;
-  if (totalLine) totalLine.textContent = `${fmtMoney(deployedTotal + reserveTotal)} total — ${fmtMoney(d.roth_total)} Roth · ${fmtMoney(d.taxable_total)} Taxable · ${fmtMoney(reserveTotal)} Reserve`;
-
-  function lineHTML(l) {
-    const tickers = Array.isArray(l.tickers) ? l.tickers.join('+') : (l.ticker || '');
-    return `<div class="deploy-line">
-      <div class="deploy-ticker">${tickers}</div>
-      <div class="deploy-theme-name">${l.theme || ''}</div>
-      <div class="deploy-amount">${fmtMoney(l.amount)}</div>
-    </div>`;
-  }
-
-  const rothLines    = (d.roth_breakdown    || DATA.themes.filter(t => t.account === 'Roth').map(t => ({ tickers: t.core_tickers, theme: t.name, amount: t.weekly_dollars })));
-  const taxableLines = (d.taxable_breakdown || DATA.themes.filter(t => t.account === 'Taxable').map(t => ({ tickers: t.core_tickers, theme: t.name, amount: t.weekly_dollars })));
-
-  // FIX 1: reserve section
-  const res = DATA.reserve || {};
-  const reserveColHTML = `
-    <div class="deploy-col" style="margin-top:12px">
-      <div class="deploy-col-header">
-        <div class="deploy-col-name" style="color:var(--text-2)">Reserve / Dry Powder</div>
-        <div class="deploy-col-total">${fmtMoney(d.reserve_total || res.total_reserve || 0)}/wk</div>
-      </div>
-      <div class="deploy-line">
-        <div class="deploy-ticker">SGOV</div>
-        <div class="deploy-theme-name">Dry powder</div>
-        <div class="deploy-amount">${fmtMoney(res.sgov_dry_powder || 0)}</div>
-      </div>
-      <div class="deploy-line">
-        <div class="deploy-ticker">LEAP</div>
-        <div class="deploy-theme-name">Accumulation buffer</div>
-        <div class="deploy-amount">${fmtMoney(res.leap_accumulation || 0)}</div>
-      </div>
-    </div>`;
-
-  if (cols) cols.innerHTML = `
-    <div class="deploy-col">
-      <div class="deploy-col-header">
-        <div class="deploy-col-name roth">Roth IRA</div>
-        <div class="deploy-col-total">${fmtMoney(d.roth_total)}</div>
-      </div>
-      ${rothLines.map(lineHTML).join('')}
-    </div>
-    <div class="deploy-col">
-      <div class="deploy-col-header">
-        <div class="deploy-col-name taxable">Taxable</div>
-        <div class="deploy-col-total">${fmtMoney(d.taxable_total)}</div>
-      </div>
-      ${taxableLines.map(lineHTML).join('')}
-    </div>
-    ${reserveColHTML}`;
-}
-
-// ─── Health / History screen (FIX 4: data_collecting state) ──────────────────
-
-function renderHealthScreen() {
-  if (!DATA) return;
-  const ks = DATA.kill_switches || {};
-
-  const drawdownEl = document.getElementById('ks-drawdown');
-  const hitrateEl  = document.getElementById('ks-hitrate');
-  const alphaEl    = document.getElementById('ks-alpha');
-  const drawdownSt = document.getElementById('ks-drawdown-status');
-  const hitrateSt  = document.getElementById('ks-hitrate-status');
-  const alphaSt    = document.getElementById('ks-alpha-status');
-  const ksStatusEl = document.getElementById('ks-collecting-notice');
-
-  // FIX 4: when data_collecting, show gray "collecting" chips instead of fake values
-  const collecting = ks.status === 'data_collecting';
-  const wkCollected = ks.weeks_collected || 0;
-  const wkNeeded    = ks.weeks_needed || 30;
-
-  if (collecting) {
-    const collectingLabel = `Data collecting · week ${wkCollected} of ${wkNeeded}`;
-    if (drawdownEl) drawdownEl.textContent = '—';
-    if (hitrateEl)  hitrateEl.textContent  = '—';
-    if (alphaEl)    alphaEl.textContent    = '—';
-    if (drawdownSt) { drawdownSt.textContent = collectingLabel; drawdownSt.className = 'ks-status collecting'; drawdownSt.style.color = 'var(--text-3)'; }
-    if (hitrateSt)  { hitrateSt.textContent  = collectingLabel; hitrateSt.className  = 'ks-status collecting'; hitrateSt.style.color  = 'var(--text-3)'; }
-    if (alphaSt)    { alphaSt.textContent    = collectingLabel; alphaSt.className    = 'ks-status collecting'; alphaSt.style.color    = 'var(--text-3)'; }
-    if (ksStatusEl) { ksStatusEl.style.display = 'block'; ksStatusEl.textContent = `Kill switches: accumulating ${wkNeeded - wkCollected} more weeks of data before live thresholds activate.`; }
-  } else {
-    if (drawdownEl) drawdownEl.textContent = ks.max_drawdown_pct != null ? ks.max_drawdown_pct.toFixed(1) + '%' : '—';
-    if (hitrateEl)  hitrateEl.textContent  = ks.rolling_hit_rate != null ? (ks.rolling_hit_rate * 100).toFixed(0) + '%' : '—';
-    if (alphaEl)    alphaEl.textContent    = ks.alpha_drawdown_pct != null ? ks.alpha_drawdown_pct.toFixed(2) + '%' : '—';
-    if (drawdownSt) { drawdownSt.textContent = ks.triggered ? 'WARN' : 'OK'; drawdownSt.className = 'ks-status ' + (ks.triggered ? 'warn' : 'ok'); drawdownSt.style.color = ''; }
-    if (hitrateSt)  { hitrateSt.textContent  = 'OK'; hitrateSt.className  = 'ks-status ok'; hitrateSt.style.color = ''; }
-    if (alphaSt)    { alphaSt.textContent    = 'OK'; alphaSt.className    = 'ks-status ok'; alphaSt.style.color = ''; }
-    if (ksStatusEl) ksStatusEl.style.display = 'none';
-  }
-
-  // Sparkline grid (FIX 7: cold-start — show "Building history" for empty sparklines)
-  const grid = document.getElementById('sparklineGrid');
-  if (grid) {
-    grid.innerHTML = DATA.themes.map(t => {
-      let spkHTML;
-      if (!t.sparkline || t.sparkline.length === 0) {
-        spkHTML = `<span style="font-size:10px;color:var(--text-3);min-width:80px">Building history</span>`;
-      } else {
-        spkHTML = buildSparkline(t.sparkline);
+(async function loadConviction(){
+  const updated = document.getElementById('tilt-updated');
+  try{
+    const res = await fetch('data/state.json', {cache: 'no-cache'});
+    if(!res.ok) throw new Error('state.json ' + res.status);
+    const state = await res.json();
+    const byId = Object.fromEntries((state.themes || []).map(t => [t.id, t]));
+    document.querySelectorAll('#tilt-live li').forEach(li => {
+      const id = li.dataset.theme;
+      const t = byId[id];
+      const el = li.querySelector('[data-conv]');
+      if(!t || typeof t.conviction !== 'number'){
+        el.textContent = '—';
+        el.classList.add('neutral');
+        return;
       }
-      return `<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
-        <div style="font-size:11px;color:var(--text-3);width:110px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${t.name.split(' ')[0]}</div>
-        ${spkHTML}
-        <div style="font-family:var(--text-mono);font-size:12px;color:var(--text);min-width:28px;text-align:right">${t.conviction}</div>
-      </div>`;
-    }).join('');
-  }
-
-  // Feed status
-  const feedRows = document.getElementById('feedStatusRows');
-  if (feedRows) {
-    const stale = DATA.stale_feeds || [];
-    if (stale.length === 0) {
-      feedRows.innerHTML = `<div class="ks-row"><div class="ks-name" style="color:var(--up)">All feeds healthy</div><div></div><div></div><div class="ks-status ok">OK</div></div>`;
-    } else {
-      feedRows.innerHTML = stale.map(f => `<div class="ks-row"><div class="ks-name">${f}</div><div></div><div></div><div class="ks-status warn">STALE</div></div>`).join('');
+      const c = Math.round(t.conviction);
+      el.innerHTML = c + '<span class="lbl">conviction</span>';
+      el.classList.remove('up','dn','neutral');
+      if(c >= 60) el.classList.add('up');
+      else if(c <= 40) el.classList.add('dn');
+      else el.classList.add('neutral');
+    });
+    if(state.updated_at){
+      const d = new Date(state.updated_at);
+      const fmt = d.toLocaleString(undefined, {year:'numeric', month:'short', day:'numeric', hour:'numeric', minute:'2-digit'});
+      updated.textContent = 'Live conviction last refreshed ' + fmt + '. Updates twice daily.';
+    }else{
+      updated.textContent = 'Live conviction loaded. Updates twice daily.';
     }
+  }catch(err){
+    updated.textContent = 'Live data unavailable — showing static positions only. (' + err.message + ')';
+    document.querySelectorAll('#tilt-live [data-conv]').forEach(el => {
+      el.textContent = '—';
+      el.classList.add('neutral');
+    });
   }
-}
-
-// ─── Copy DCA ─────────────────────────────────────────────────────────────────
-
-function copyDCA() {
-  if (!DATA || !DATA.deploy) return;
-  const d = DATA.deploy;
-  const lines = [];
-  const genAt = new Date(DATA.generated_at).toLocaleDateString('en-US');
-  lines.push(`Iggavestment DCA — ${genAt}`);
-  lines.push('');
-  lines.push('ROTH IRA:');
-  (d.roth_breakdown || []).forEach(l => {
-    const tickers = Array.isArray(l.tickers) ? l.tickers.join('+') : l.ticker || '';
-    lines.push(`  ${tickers} (${l.theme}): $${(l.amount || 0).toFixed(2)}`);
-  });
-  lines.push(`  Total: $${(d.roth_total || 0).toFixed(2)}`);
-  lines.push('');
-  lines.push('TAXABLE:');
-  (d.taxable_breakdown || []).forEach(l => {
-    const tickers = Array.isArray(l.tickers) ? l.tickers.join('+') : l.ticker || '';
-    lines.push(`  ${tickers} (${l.theme}): $${(l.amount || 0).toFixed(2)}`);
-  });
-  lines.push(`  Total: $${(d.taxable_total || 0).toFixed(2)}`);
-  lines.push('');
-  lines.push(`Grand total: $${((d.roth_total || 0) + (d.taxable_total || 0)).toFixed(2)}`);
-
-  navigator.clipboard.writeText(lines.join('\n')).then(() => {
-    const btn = document.getElementById('copyBtn');
-    if (btn) { btn.classList.add('copied'); btn.textContent = 'Copied!'; setTimeout(() => { btn.classList.remove('copied'); btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>Copy DCA Instructions'; }, 2000); }
-  }).catch(() => {});
-}
-
-// ─── Render all ───────────────────────────────────────────────────────────────
-
-// FIX I: render cost telemetry footer
-function renderFooter() {
-  const footer = document.getElementById('site-footer');
-  if (!footer || !DATA) return;
-  const meta = DATA.meta || {};
-  const cost = meta.refresh_cost_usd != null ? `$${Number(meta.refresh_cost_usd).toFixed(3)}` : '—';
-  const dur  = meta.refresh_duration_sec != null ? `${meta.refresh_duration_sec}s` : '—';
-  const evts = meta.events_processed != null ? `${meta.events_processed} events` : '';
-  const note = meta.cost_note === 'cli-estimate' ? ' (est.)' : '';
-  footer.innerHTML = `v1.0.0 · Iggavestment · <a href="https://github.com/xavierdjones/iggavestment" target="_blank" rel="noopener">GitHub</a>`
-    + (evts ? ` · Last refresh: ${evts} · ${cost}${note} · ${dur} · cron 5am/5pm PT` : '');
-}
-
-function renderAll() {
-  renderStatusBar();
-  renderKillBanner();
-  renderStats();
-  renderThemeCards();
-  renderDeployScreen();
-  renderHealthScreen();
-  renderFooter();
-}
-
-// ─── Boot ─────────────────────────────────────────────────────────────────────
-
-loadData();
+})();
 </script>
-
 </body>
 </html>
