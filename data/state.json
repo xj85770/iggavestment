@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "generated_at": "2026-10-12T21:53:56.017771-07:00",
+  "generated_at": "2026-10-13T00:21:15.435339-07:00",
   "next_refresh_at": "2026-10-13T05:00:00-07:00",
   "stale": false,
   "stale_feeds": [],
@@ -68,7 +68,7 @@
       "last_change": {
         "direction": "flat",
         "delta": 0,
-        "since_date": "2026-10-05"
+        "since_date": "2026-10-06"
       }
     },
     {
@@ -133,7 +133,7 @@
       "last_change": {
         "direction": "flat",
         "delta": 0,
-        "since_date": "2026-10-05"
+        "since_date": "2026-10-06"
       }
     },
     {
@@ -190,7 +190,7 @@
       "last_change": {
         "direction": "flat",
         "delta": 0,
-        "since_date": "2026-10-05"
+        "since_date": "2026-10-06"
       }
     },
     {
@@ -257,7 +257,7 @@
       "last_change": {
         "direction": "flat",
         "delta": 0,
-        "since_date": "2026-10-05"
+        "since_date": "2026-10-06"
       }
     },
     {
@@ -314,7 +314,7 @@
       "last_change": {
         "direction": "flat",
         "delta": 0,
-        "since_date": "2026-10-05"
+        "since_date": "2026-10-06"
       }
     },
     {
@@ -373,7 +373,7 @@
       "last_change": {
         "direction": "flat",
         "delta": 0,
-        "since_date": "2026-10-05"
+        "since_date": "2026-10-06"
       }
     },
     {
@@ -432,7 +432,7 @@
       "last_change": {
         "direction": "flat",
         "delta": 0,
-        "since_date": "2026-10-05"
+        "since_date": "2026-10-06"
       }
     }
   ],
@@ -516,7 +516,7 @@
     "triggered": false,
     "warnings": [],
     "status": "data_collecting",
-    "weeks_collected": 578,
+    "weeks_collected": 579,
     "weeks_needed": 30,
     "max_drawdown_pct": 0.0,
     "rolling_hit_rate": null,
