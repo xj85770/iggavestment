@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
-  "generated_at": "2026-10-29T23:48:00.283171-07:00",
-  "next_refresh_at": "2026-10-30T05:00:00-07:00",
+  "generated_at": "2026-10-30T10:17:00.720834-07:00",
+  "next_refresh_at": "2026-10-30T17:00:00-07:00",
   "stale": false,
   "stale_feeds": [],
   "degraded": false,
@@ -68,7 +68,7 @@
       "last_change": {
         "direction": "flat",
         "delta": 0,
-        "since_date": "2026-10-22"
+        "since_date": "2026-10-23"
       }
     },
     {
@@ -133,7 +133,7 @@
       "last_change": {
         "direction": "flat",
         "delta": 0,
-        "since_date": "2026-10-22"
+        "since_date": "2026-10-23"
       }
     },
     {
@@ -190,7 +190,7 @@
       "last_change": {
         "direction": "flat",
         "delta": 0,
-        "since_date": "2026-10-22"
+        "since_date": "2026-10-23"
       }
     },
     {
@@ -257,7 +257,7 @@
       "last_change": {
         "direction": "flat",
         "delta": 0,
-        "since_date": "2026-10-22"
+        "since_date": "2026-10-23"
       }
     },
     {
@@ -314,7 +314,7 @@
       "last_change": {
         "direction": "flat",
         "delta": 0,
-        "since_date": "2026-10-22"
+        "since_date": "2026-10-23"
       }
     },
     {
@@ -373,7 +373,7 @@
       "last_change": {
         "direction": "flat",
         "delta": 0,
-        "since_date": "2026-10-22"
+        "since_date": "2026-10-23"
       }
     },
     {
@@ -432,7 +432,7 @@
       "last_change": {
         "direction": "flat",
         "delta": 0,
-        "since_date": "2026-10-22"
+        "since_date": "2026-10-23"
       }
     }
   ],
@@ -516,7 +516,7 @@
     "triggered": false,
     "warnings": [],
     "status": "data_collecting",
-    "weeks_collected": 647,
+    "weeks_collected": 648,
     "weeks_needed": 30,
     "max_drawdown_pct": 0.0,
     "rolling_hit_rate": null,
@@ -529,7 +529,7 @@
     "vs_equal_weight_pct": null,
     "tilt_alpha_ytd_pct": null,
     "validation_status": "live",
-    "weeks_collected": 323
+    "weeks_collected": 324
   },
   "meta": {
     "refresh_cost_usd": null,
