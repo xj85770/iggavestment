@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "generated_at": "2026-11-14T20:12:03.691645-08:00",
+  "generated_at": "2026-11-14T23:33:01.687090-08:00",
   "next_refresh_at": "2026-11-15T05:00:00-08:00",
   "stale": false,
   "stale_feeds": [],
@@ -516,7 +516,7 @@
     "triggered": false,
     "warnings": [],
     "status": "data_collecting",
-    "weeks_collected": 709,
+    "weeks_collected": 710,
     "weeks_needed": 30,
     "max_drawdown_pct": 0.0,
     "rolling_hit_rate": null,
@@ -529,7 +529,7 @@
     "vs_equal_weight_pct": null,
     "tilt_alpha_ytd_pct": null,
     "validation_status": "live",
-    "weeks_collected": 354
+    "weeks_collected": 355
   },
   "meta": {
     "refresh_cost_usd": null,
