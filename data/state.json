@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "generated_at": "2026-11-23T23:52:22.442088-08:00",
+  "generated_at": "2026-11-24T02:40:12.343598-08:00",
   "next_refresh_at": "2026-11-24T05:00:00-08:00",
   "stale": false,
   "stale_feeds": [],
@@ -68,7 +68,7 @@
       "last_change": {
         "direction": "flat",
         "delta": 0,
-        "since_date": "2026-11-16"
+        "since_date": "2026-11-17"
       }
     },
     {
@@ -133,7 +133,7 @@
       "last_change": {
         "direction": "flat",
         "delta": 0,
-        "since_date": "2026-11-16"
+        "since_date": "2026-11-17"
       }
     },
     {
@@ -190,7 +190,7 @@
       "last_change": {
         "direction": "flat",
         "delta": 0,
-        "since_date": "2026-11-16"
+        "since_date": "2026-11-17"
       }
     },
     {
@@ -257,7 +257,7 @@
       "last_change": {
         "direction": "flat",
         "delta": 0,
-        "since_date": "2026-11-16"
+        "since_date": "2026-11-17"
       }
     },
     {
@@ -314,7 +314,7 @@
       "last_change": {
         "direction": "flat",
         "delta": 0,
-        "since_date": "2026-11-16"
+        "since_date": "2026-11-17"
       }
     },
     {
@@ -373,7 +373,7 @@
       "last_change": {
         "direction": "flat",
         "delta": 0,
-        "since_date": "2026-11-16"
+        "since_date": "2026-11-17"
       }
     },
     {
@@ -432,7 +432,7 @@
       "last_change": {
         "direction": "flat",
         "delta": 0,
-        "since_date": "2026-11-16"
+        "since_date": "2026-11-17"
       }
     }
   ],
@@ -516,7 +516,7 @@
     "triggered": false,
     "warnings": [],
     "status": "data_collecting",
-    "weeks_collected": 745,
+    "weeks_collected": 746,
     "weeks_needed": 30,
     "max_drawdown_pct": 0.0,
     "rolling_hit_rate": null,
@@ -529,7 +529,7 @@
     "vs_equal_weight_pct": null,
     "tilt_alpha_ytd_pct": null,
     "validation_status": "live",
-    "weeks_collected": 372
+    "weeks_collected": 373
   },
   "meta": {
     "refresh_cost_usd": null,
